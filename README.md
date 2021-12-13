@@ -5,13 +5,13 @@ This example shows how to get and set system information made available by the [
 The project defines two build targets:
  
 #### - DevMan_Generic
-  - Work on systems without TC1000 ADS Router
+  - Works on systems without TC1000 ADS Router
   - Utilize the [Beckhoff/ADS](https://github.com/Beckhoff/ADS) library
-  - Tested under Windows, Linux and TwinCAT BSD
+  - Tested under Windows, Linux and TwinCAT/BSD
 #### - DevMan_TC1000
   - Only works on systems that run an TC1000 ADS Router
   - Utilize the libraries shipped with the TC1000 ADS Router installtion
-  - Tested on Windows and TwinCAT BSD
+  - Tested on Windows and TwinCAT/BSD
 
 
 ## Build & Run
