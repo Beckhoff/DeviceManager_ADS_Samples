@@ -38,26 +38,10 @@ endif (UNIX)
 
 list(APPEND includePath "${PROJECT_BINARY_DIR}" "${beckhoff_ads_SOURCE_DIR}/AdsLib")
 
-
 target_include_directories(DevMan_Generic PUBLIC
   "$<BUILD_INTERFACE:${includePath}>"
 )
 
-
-macro(print_all_variables)
-    message(STATUS "print_all_variables------------------------------------------{")
-    get_cmake_property(_variableNames VARIABLES)
-    foreach (_variableName ${_variableNames})
-        message(STATUS "${_variableName}=${${_variableName}}")
-    endforeach()
-    message(STATUS "print_all_variables------------------------------------------}")
-endmacro()
-
-
 target_link_libraries(DevMan_Generic PUBLIC ads)
 
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
-
-print_all_variables()
