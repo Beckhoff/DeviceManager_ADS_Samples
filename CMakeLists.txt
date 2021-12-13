@@ -2,18 +2,15 @@ cmake_minimum_required (VERSION 3.14)
 
 project(ADS_DeviceManager_Sample)
 
-# define C++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-
 add_executable (DevMan_Generic "DevMan_Generic.cpp")
 add_executable (DevMan_TC1000 "DevMan_TC1000.cpp")
 
-# TODO: Diese dependency ist in der falschen CMakeLists.txt auf dem Git-Repo
+# TODO: This dependency is in the wrong CMakeLists.txt in the BEckhoff/ADS repo
 find_package(Threads)
-
 
 include(FetchContent)
 
@@ -25,14 +22,6 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(Beckhoff_ADS)
-
-
-
-# Platform speficic tasks
-# https://stackoverflow.com/questions/9160335/os-specific-instructions-in-cmake-how-to
-
-# TODO: Add dependency: ADS C++ library from GitHub
-# https://stackoverflow.com/questions/59790798/cmakelists-adding-source-files-from-github-with-externalproject
 
 if (WIN32)
     target_include_directories(DevMan_TC1000 PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
@@ -53,8 +42,6 @@ list(APPEND includePath "${PROJECT_BINARY_DIR}" "${beckhoff_ads_SOURCE_DIR}/AdsL
 target_include_directories(DevMan_Generic PUBLIC
   "$<BUILD_INTERFACE:${includePath}>"
 )
-
-
 
 
 macro(print_all_variables)
