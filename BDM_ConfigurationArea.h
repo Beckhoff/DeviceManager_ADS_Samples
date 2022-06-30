@@ -47,7 +47,7 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_NIC:
 			std::cout << "MODULETYPE_NIC " << u16_lowWord << std::endl;
-			changeIPAddress(adsClient, u16_lowWord);
+			//changeIPAddress(adsClient, u16_lowWord);
 			break;
 		case MODULETYPE_TIME:
 			std::cout << "MODULETYPE_TIME " << u16_lowWord << std::endl;
