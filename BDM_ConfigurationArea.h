@@ -242,7 +242,6 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 		std::cout << "Error AdsSyncReadReq: " << n_err << std::endl;
 		exit(-1);
 	}
-	u16_cpu_usage = u16_cpu_usage & 0xFF; 	// TODO: What is this good for?
 
 	std::cout << ">>> CPU usage: " << u16_cpu_usage << "%" << std::endl;
 
