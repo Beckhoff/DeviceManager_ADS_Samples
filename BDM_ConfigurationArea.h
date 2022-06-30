@@ -2,6 +2,7 @@
 #define BDM_CONFIGURATION_AREA_H
 
 #include <cstring>
+#include <cstdint>
 #include "BasicADS.h"
 #include "Mdp.h"
 
@@ -9,6 +10,7 @@
 void readCPU(BasicADS& adsClient, unsigned short moduleId);
 void rebootDevice(BasicADS& adsClient, unsigned short moduleId);
 void changeIPAddress(BasicADS& adsClient, unsigned short moduleId);
+void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId);
 
 void readModules(BasicADS& adsClient) {
 
@@ -66,6 +68,7 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_TWINCAT:
 			std::cout << "MODULETYPE_TWINCAT " << u16_lowWord << std::endl;
+			//deleteAdsRoute(adsClient, u16_lowWord);
 			break;
 		case MODULETYPE_DATASTORE:
 			std::cout << "MODULETYPE_DATASTORE " << u16_lowWord << std::endl;
@@ -196,6 +199,34 @@ void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 		std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
 	}
 }
+
+void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
+	char route_name[] = "CX-50C9E8";
+	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl;
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382 
+
+	char service_transfer_object[50] = {};
+	size_t route_name_length = strlen(route_name);
+
+	// Copy length of route name to service transfer object
+	*reinterpret_cast<uint32_t*>(service_transfer_object) = route_name_length;
+	// Copy the route name to the service transfer object
+	memcpy(service_transfer_object + sizeof(uint32_t), route_name, route_name_length);
+
+	unsigned long u32_del_ads_route_idx = 0xB001 + (moduleId << 4);
+	u32_del_ads_route_idx = (u32_del_ads_route_idx << 16) + 1; // Subindex "Write Data"
+
+	unsigned long n_err = 0;
+	n_err = adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cout << "Error AdsSyncWriteReq: " << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	std::cout << ">>> Route deleteded successful" << std::endl;
+}
+
 
 void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 
