@@ -1,11 +1,18 @@
-#ifndef BDM_GENERAL_AREA_H
-#define BDM_GENERAL_AREA_H
-
-#include "BasicADS.h"
+#include "BDM_GeneralArea.h"
 #include "Mdp.h"
+#include "BasicADS.h"
+
+#include <iostream>
+#include <cstddef>
+
+#ifdef _WIN32
+	#include "TcAdsDef.h"
+#else
+	#include "AdsDef.h"
+#endif
 
 
-void readDeviceName(BasicADS &adsClient){
+void readDeviceName(BasicADS& adsClient) {
 
 	unsigned long n_err;
 	unsigned long strLen = 0;
@@ -20,8 +27,3 @@ void readDeviceName(BasicADS &adsClient){
 	s_deviceName[strLen] = 0; // End String
 	std::cout << "Device Name: " << s_deviceName << std::endl;
 }
-
-
-
-
-#endif

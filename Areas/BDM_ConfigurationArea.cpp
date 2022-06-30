@@ -1,22 +1,25 @@
-#ifndef BDM_CONFIGURATION_AREA_H
-#define BDM_CONFIGURATION_AREA_H
+#include "BDM_ConfigurationArea.h"
+#include "Mdp.h"
+#include "BasicADS.h"
 
+#include <iostream>
+#include <cstddef>
 #include <cstring>
 #include <cstdint>
-#include "BasicADS.h"
-#include "Mdp.h"
 
-// Forward declarations
-void readCPU(BasicADS& adsClient, unsigned short moduleId);
-void rebootDevice(BasicADS& adsClient, unsigned short moduleId);
-void changeIPAddress(BasicADS& adsClient, unsigned short moduleId);
-void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId);
+#ifdef _WIN32
+#include "TcAdsDef.h"
+#else
+#include "AdsDef.h"
+#endif
+
+
 
 void readModules(BasicADS& adsClient) {
 
 	unsigned long n_err = 0;
 	unsigned long n_bytesRead = 0;
-	
+
 	// Read length of list of module IDs https://infosys.beckhoff.com/content/1031/devicemanager/45035996536742667.html?id=5503267175110745821
 	unsigned short u16_len_module_id_list = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
@@ -30,7 +33,7 @@ void readModules(BasicADS& adsClient) {
 
 	// Download table of module IDs (Configuration Area)
 	for (int i = 1; i < u16_len_module_id_list; ++i) {
-		
+
 		unsigned long  u32_module_entry = 0;
 		unsigned long indexOffset = MDP_IDX_OFFS_DEVICE_AREA + i;
 		n_err = adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
@@ -156,7 +159,7 @@ void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html 
 	unsigned long n_err = 0;
 	unsigned long strLen = 0;
-	
+
 	unsigned long u32_NIC_properties = 0;
 	u32_NIC_properties = 0x8001 + (moduleId << 4);
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
@@ -233,7 +236,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	std::cout << ">>> Read CPU Information:" << std::endl;
 	unsigned long n_err = 0;
 	unsigned long n_bytesRead = 0;
-	
+
 	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
 
 	/***********************************************
@@ -245,7 +248,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	unsigned long u32_cpu_freq_idx = 0;
 	u32_cpu_freq_idx = 0x8000 + (moduleId << 4) + 1; // +1 for CPU properties table
 	u32_cpu_freq_idx = (u32_cpu_freq_idx << 16) + 1;   // 1 = Subindex of CPU frequency
-	
+
 	unsigned long u32_cpu_freq = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_freq_idx, sizeof(u32_cpu_freq), &u32_cpu_freq, &n_bytesRead);
 
@@ -301,7 +304,7 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	std::cout << ">>> Read Miscellaneous Information:" << std::endl;
 	unsigned long n_err = 0;
 	unsigned long n_bytesRead = 0;
-	
+
 	/***********************************************
 	 *                                             *
 	 *    Read the state of the Security Wizard    *
@@ -341,4 +344,3 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	}
 	std::cout << ">>> Reboot Requested" << std::endl;
 }
-#endif

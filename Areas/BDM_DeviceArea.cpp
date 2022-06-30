@@ -1,8 +1,16 @@
-#ifndef BDM_DEVICE_AREA_H
-#define BDM_DEVICE_AREA_H
-
-#include "BasicADS.h"
+#include "BDM_DeviceArea.h"
 #include "Mdp.h"
+#include "BasicADS.h"
+
+#include <iostream>
+#include <cstddef>
+
+#ifdef _WIN32
+#include "TcAdsDef.h"
+#else
+#include "AdsDef.h"
+#endif
+
 
 void readSerialNumber(BasicADS& adsClient) {
 	unsigned long n_err;
@@ -19,5 +27,3 @@ void readSerialNumber(BasicADS& adsClient) {
 	s_serialNo[strLen] = 0; // End String
 	std::cout << "Serial Number: " << s_serialNo << std::endl;
 }
-
-#endif

@@ -6,10 +6,15 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-add_executable (DevMan_Generic "DevMan_Generic.cpp")
-add_executable (DevMan_TC1000 "DevMan_TC1000.cpp")
+include_directories(Ads Areas)
 
-# TODO: This dependency is in the wrong CMakeLists.txt in the BEckhoff/ADS repo
+
+add_executable(DevMan_Generic "DevMan_Generic.cpp")
+add_executable(DevMan_TC1000 "DevMan_TC1000.cpp")
+
+add_subdirectory(Areas)
+
+# TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
 find_package(Threads)
 
 include(FetchContent)
@@ -23,10 +28,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Beckhoff_ADS)
 
+
+
+
 if (WIN32)
     target_include_directories(DevMan_TC1000 PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
     target_link_directories(DevMan_TC1000 PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
     target_link_libraries(DevMan_TC1000 PUBLIC TcAdsDll.lib)
+
 endif (WIN32)
 
 if (UNIX)
