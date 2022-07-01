@@ -1,6 +1,7 @@
 #ifndef BASIC_ADS_H
 #define BASIC_ADS_H
 
+#include <cstdint>
 /*
  * BasicADS
  *
@@ -14,16 +15,16 @@ public:
     virtual ~BasicADS(){};
 
     virtual long AdsReadReq(    
-                                long indexGroup,
-                                long indexOffset,
-                                unsigned long length,
+                                uint32_t indexGroup,
+                                uint32_t indexOffset,
+                                uint32_t length,
                                 void* pData,
-                                unsigned long* pBytesRead) = 0;
+                                uint32_t* pBytesRead) = 0;
 
     virtual long AdsWriteReq(
-                                long indexGroup,
-                                long indexOffset,
-                                unsigned long length,
+                                uint32_t indexGroup,
+                                uint32_t indexOffset,
+                                uint32_t length,
                                 void* pData) = 0;
            
 };

@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstddef>
 
+
 #ifdef _WIN32
 #include "TcAdsDef.h"
 #else
@@ -13,10 +14,9 @@
 
 
 void readSerialNumber(BasicADS& adsClient) {
-	unsigned long n_err;
-	unsigned long strLen = 0;
+	long n_err = 0;
+	uint32_t strLen = 0;
 	char s_serialNo[50];
-
 
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_SERIAL_NO, sizeof(s_serialNo), s_serialNo, &strLen);
 

@@ -17,11 +17,11 @@
 
 void readModules(BasicADS& adsClient) {
 
-	unsigned long n_err = 0;
-	unsigned long n_bytesRead = 0;
+	long n_err = 0;
+	uint32_t n_bytesRead = 0;
 
 	// Read length of list of module IDs https://infosys.beckhoff.com/content/1031/devicemanager/45035996536742667.html?id=5503267175110745821
-	unsigned short u16_len_module_id_list = 0;
+	uint16_t u16_len_module_id_list = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
@@ -34,8 +34,8 @@ void readModules(BasicADS& adsClient) {
 	// Download table of module IDs (Configuration Area)
 	for (int i = 1; i < u16_len_module_id_list; ++i) {
 
-		unsigned long  u32_module_entry = 0;
-		unsigned long indexOffset = MDP_IDX_OFFS_DEVICE_AREA + i;
+		uint32_t  u32_module_entry = 0;
+		uint32_t indexOffset = MDP_IDX_OFFS_DEVICE_AREA + i;
 		n_err = adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
 
 		if (n_err != ADSERR_NOERR) {
@@ -43,8 +43,8 @@ void readModules(BasicADS& adsClient) {
 			break;
 		}
 
-		unsigned short u16_highWord = u32_module_entry >> 16; // ModuleType
-		unsigned short u16_lowWord = u32_module_entry & 0xFF; // ModuleId
+		uint16_t u16_highWord = u32_module_entry >> 16; // ModuleType
+		uint16_t u16_lowWord = u32_module_entry & 0xFF; // ModuleId
 
 		switch (u16_highWord) {
 		case MODULETYPE_ACCESSCTRL:
@@ -157,10 +157,10 @@ void readModules(BasicADS& adsClient) {
 void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html 
-	unsigned long n_err = 0;
-	unsigned long strLen = 0;
+	long n_err = 0;
+	uint32_t strLen = 0;
 
-	unsigned long u32_NIC_properties = 0;
+	uint32_t u32_NIC_properties = 0;
 	u32_NIC_properties = 0x8001 + (moduleId << 4);
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
 
@@ -216,10 +216,10 @@ void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
 	// Copy the route name to the service transfer object
 	memcpy(service_transfer_object + sizeof(uint32_t), route_name, route_name_length);
 
-	unsigned long u32_del_ads_route_idx = 0xB001 + (moduleId << 4);
+	uint32_t u32_del_ads_route_idx = 0xB001 + (moduleId << 4);
 	u32_del_ads_route_idx = (u32_del_ads_route_idx << 16) + 1; // Subindex "Write Data"
 
-	unsigned long n_err = 0;
+	long n_err = 0;
 	n_err = adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
@@ -234,8 +234,8 @@ void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
 void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 
 	std::cout << ">>> Read CPU Information:" << std::endl;
-	unsigned long n_err = 0;
-	unsigned long n_bytesRead = 0;
+	long n_err = 0;
+	uint32_t n_bytesRead = 0;
 
 	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
 
@@ -245,11 +245,11 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	 *                                             *
 	 ***********************************************/
 
-	unsigned long u32_cpu_freq_idx = 0;
+	uint32_t u32_cpu_freq_idx = 0;
 	u32_cpu_freq_idx = 0x8000 + (moduleId << 4) + 1; // +1 for CPU properties table
 	u32_cpu_freq_idx = (u32_cpu_freq_idx << 16) + 1;   // 1 = Subindex of CPU frequency
 
-	unsigned long u32_cpu_freq = 0;
+	uint32_t u32_cpu_freq = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_freq_idx, sizeof(u32_cpu_freq), &u32_cpu_freq, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
@@ -265,11 +265,11 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	 *                                             *
 	 ***********************************************/
 
-	unsigned long u32_cpu_usage_idx = 0;
+	uint32_t u32_cpu_usage_idx = 0;
 	u32_cpu_usage_idx = 0x8000 + (moduleId << 4) + 1;	// + 1 for CPU properties table
 	u32_cpu_usage_idx = (u32_cpu_usage_idx << 16) + 2;	// 2 = Subindex of CPU usage
 
-	unsigned short u16_cpu_usage = 0;
+	uint16_t u16_cpu_usage = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_usage_idx, sizeof(u16_cpu_usage), &u16_cpu_usage, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
@@ -285,11 +285,11 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	 *                                             *
 	 ***********************************************/
 
-	unsigned long u32_cpu_temp_idx = 0;
+	uint32_t u32_cpu_temp_idx = 0;
 	u32_cpu_temp_idx = 0x8000 + (moduleId << 4) + 1; // + 1 for CPU properties table
 	u32_cpu_temp_idx = (u32_cpu_temp_idx << 16) + 3; // 3 = Subindex of CPU temeprature
 
-	short u16_cpu_temperature = 0;
+	uint16_t u16_cpu_temperature = 0;
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_temp_idx, sizeof(u16_cpu_temperature), &u16_cpu_temperature, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
@@ -302,8 +302,8 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 
 	std::cout << ">>> Read Miscellaneous Information:" << std::endl;
-	unsigned long n_err = 0;
-	unsigned long n_bytesRead = 0;
+	long n_err = 0;
+	uint32_t n_bytesRead = 0;
 
 	/***********************************************
 	 *                                             *
@@ -311,7 +311,7 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	 *                                             *
 	 ***********************************************/
 
-	unsigned long u32_secWizard = 0;
+	uint32_t u32_secWizard = 0;
 	u32_secWizard = 0x8001 + (moduleId << 4);
 	u32_secWizard = (u32_secWizard << 16) + 4; // 4 == Subindex for Security Wizard
 
@@ -331,7 +331,7 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	 **********************************************/
 	 // https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
 
-	unsigned long u32_reboot = 0;
+	uint32_t u32_reboot = 0;
 	u32_reboot = 0xB001 + (moduleId << 4);
 	u32_reboot = (u32_reboot << 16) + 1; // SubIndex = 1 as described in https://infosys.beckhoff.com/content/1033/devicemanager/263036171.html
 	unsigned char dummy = 0;

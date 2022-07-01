@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cstddef>
+#include <cstdint>
 
 #ifdef _WIN32
 	#include "TcAdsDef.h"
@@ -14,8 +15,8 @@
 
 void readDeviceName(BasicADS& adsClient) {
 
-	unsigned long n_err;
-	unsigned long strLen = 0;
+	long n_err = 0;
+	uint32_t strLen = 0;
 	char s_deviceName[50];
 
 	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_NAME, sizeof(s_deviceName), s_deviceName, &strLen);

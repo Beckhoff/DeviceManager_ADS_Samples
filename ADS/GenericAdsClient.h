@@ -1,10 +1,13 @@
 #ifndef GENERIC_ADSCLIENT_H
 #define GENERIC_ADSCLIENT_H
 
+#include <cstdint>
+
 #include "BasicADS.h"
 #include "AdsDevice.h"
 #include "AdsDef.h"
 #include "AdsLib.h"
+
 
 
 class GenericAdsClient : public BasicADS {
@@ -21,12 +24,12 @@ public:
     };
 
 
-    long AdsReadReq(long indexGroup, long indexOffset, unsigned long length, void *pData, unsigned long* pBytesRead)
+    long AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData, uint32_t *pBytesRead)
     {
         return m_adsClient->ReadReqEx2(indexGroup, indexOffset, length, pData, (unsigned int*)pBytesRead);
     };
 
-    long AdsWriteReq(long indexGroup, long indexOffset, unsigned long length, void *pData){
+    long AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData){
         return m_adsClient->WriteReqEx(indexGroup, indexOffset, length, pData);
     };
 

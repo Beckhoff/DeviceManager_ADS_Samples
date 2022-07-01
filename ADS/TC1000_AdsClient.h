@@ -5,7 +5,7 @@
 #   include <Windows.h>
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 #include "TcAdsDef.h"
 #include "TcAdsAPI.h"
 #include "BasicADS.h"
@@ -28,17 +28,17 @@ public:
         AdsPortClose();
     };
 
-    long AdsReadReq(long indexGroup, long indexOffset, unsigned long length, void* pData, unsigned long* pBytesRead)
+    long AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData, uint32_t *pBytesRead)
     {
 #if __FreeBSD__
  	long ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (ads_ui32*)pBytesRead);
 #else
- 	long ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, pBytesRead);
+ 	long ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (unsigned long*)pBytesRead);
 #endif
         return ret;
     };
 
-    long AdsWriteReq(long indexGroup, long indexOffset, unsigned long length, void* pData) {
+    long AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData) {
         return AdsSyncWriteReq(&m_AmsAddr, indexGroup, indexOffset, length, pData);
     };
 
