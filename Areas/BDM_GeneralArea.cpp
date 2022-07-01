@@ -6,7 +6,7 @@
 #include <cstddef>
 #include <cstdint>
 
-#ifdef _WIN32
+#if defined _WIN32 || defined __FreeBSD__
 	#include "TcAdsDef.h"
 #else
 	#include "AdsDef.h"
