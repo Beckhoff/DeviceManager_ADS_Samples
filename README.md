@@ -23,3 +23,6 @@ In order to build and run the examples, do the following:
 4.	Build a specicifc target based on your configuration
     - `cmake –build build –target DevMan_Generic`
     - `cmake –build build –target DevMan_TC1000`
+5. Run the example
+    - `./build/DevMan_Generic`
+    - `./build/DevMan_TC1000`
