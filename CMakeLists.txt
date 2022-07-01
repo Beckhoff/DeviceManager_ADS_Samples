@@ -6,18 +6,33 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(Ads Areas)
 
+
+#include_directories(
+#  "/Ads"
+#)
+
+#include_directories(
+#  "/Areas"
+#)
 
 add_executable(DevMan_Generic "DevMan_Generic.cpp")
 add_executable(DevMan_TC1000 "DevMan_TC1000.cpp")
 
+include_directories(
+  "${CMAKE_SOURCE_DIR}/ADS"
+  "${CMAKE_SOURCE_DIR}/Areas"
+)
+
+#target_include_directories(DevMan_Generic PUBLIC "${CMAKE_SOURCE_DIR}/Ads")
+#target_include_directories(DevMan_TC1000 PUBLIC "${CMAKE_SOURCE_DIR}/Areas")
 add_subdirectory(Areas)
 
 # TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
 find_package(Threads)
 
 include(FetchContent)
+
 
 FetchContent_Declare(
 	Beckhoff_ADS
