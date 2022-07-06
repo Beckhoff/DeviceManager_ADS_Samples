@@ -21,8 +21,8 @@ In order to build and run the examples, do the following:
 2.	Run `cmake -B build`
 3.	Adapt the AmsNetId of the target device in [DevMan_Generic.cpp](https://github.com/Beckhoff/DeviceManager_ADS_Example/blob/main/DevMan_Generic.cpp) or [DevMan_TC1000.cpp](https://github.com/Beckhoff/DeviceManager_ADS_Example/blob/main/DevMan_TC1000.cpp)
 4.	Build a specicifc target based on your configuration
-    - `cmake –build build –target DevMan_Generic`
-    - `cmake –build build –target DevMan_TC1000`
+    - `cmake –-build build –-target DevMan_Generic`
+    - `cmake –-build build –-target DevMan_TC1000`
 5. Run the example
     - `./build/DevMan_Generic`
     - `./build/DevMan_TC1000`
