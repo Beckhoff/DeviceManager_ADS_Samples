@@ -25,7 +25,7 @@ DeviceArea& DeviceArea::operator=(const DeviceArea& other) {
 
 
 void DeviceArea::readSerialNumber() {
-	long n_err = 0;
+	uint32_t n_err = 0;
 	uint32_t strLen = 0;
 	char s_serialNo[50];
 

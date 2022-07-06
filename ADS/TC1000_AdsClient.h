@@ -28,24 +28,24 @@ public:
         AdsPortClose();
     };
 
-    long AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData, uint32_t *pBytesRead)
+    uint32_t AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData, uint32_t *pBytesRead)
     {
 #if __FreeBSD__
- 	long ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (ads_ui32*)pBytesRead);
+        uint32_t ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (ads_ui32*)pBytesRead);
 #else
- 	long ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (unsigned long*)pBytesRead);
+        uint32_t ret = AdsSyncReadReqEx(&m_AmsAddr, indexGroup, indexOffset, length, pData, (unsigned long*)pBytesRead);
 #endif
         return ret;
     };
 
-    long AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData) {
+    uint32_t AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void* pData) {
         return AdsSyncWriteReq(&m_AmsAddr, indexGroup, indexOffset, length, pData);
     };
 
 private:
 
-    AmsAddr m_AmsAddr;
-    long    m_port;
+    AmsAddr     m_AmsAddr;
+    uint32_t    m_port;
 };
 
 #endif

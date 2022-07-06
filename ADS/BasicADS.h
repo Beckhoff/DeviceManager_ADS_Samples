@@ -14,14 +14,14 @@ class BasicADS {
 public:
     virtual ~BasicADS(){};
 
-    virtual long AdsReadReq(    
+    virtual uint32_t AdsReadReq(
                                 uint32_t indexGroup,
                                 uint32_t indexOffset,
                                 uint32_t length,
                                 void* pData,
                                 uint32_t* pBytesRead) = 0;
 
-    virtual long AdsWriteReq(
+    virtual uint32_t AdsWriteReq(
                                 uint32_t indexGroup,
                                 uint32_t indexOffset,
                                 uint32_t length,
