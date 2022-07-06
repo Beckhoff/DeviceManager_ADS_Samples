@@ -12,13 +12,24 @@
 #include "AdsDef.h"
 #endif
 
+DeviceArea::DeviceArea(BasicADS* adsClient)
+	: m_adsClient(*adsClient) {};
 
-void readSerialNumber(BasicADS& adsClient) {
+DeviceArea::DeviceArea(const DeviceArea& other)
+	: m_adsClient(other.m_adsClient) {};
+
+DeviceArea& DeviceArea::operator=(const DeviceArea& other) {
+	m_adsClient = other.m_adsClient;
+	return *this;
+}
+
+
+void DeviceArea::readSerialNumber() {
 	long n_err = 0;
 	uint32_t strLen = 0;
 	char s_serialNo[50];
 
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_SERIAL_NO, sizeof(s_serialNo), s_serialNo, &strLen);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_SERIAL_NO, sizeof(s_serialNo), s_serialNo, &strLen);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;

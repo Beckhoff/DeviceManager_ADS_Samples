@@ -15,14 +15,14 @@ int main(){
 
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 
-	// General Area
-	readDeviceName(*adsClient);
+	ConfigurationArea configArea(adsClient.get());
+	configArea.readModules();
 
-	// Device Area
-	readSerialNumber(*adsClient);
+	GeneralArea genArea(adsClient.get());
+	genArea.readDeviceName();
 
-	// Configuration Area
-	readModules(*adsClient);
+	DeviceArea devArea(adsClient.get());
+	devArea.readSerialNumber();
 
 	return 0;
 }

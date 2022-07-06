@@ -15,14 +15,28 @@
 
 
 
-void readModules(BasicADS& adsClient) {
+ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
+	: m_adsClient(*adsClient) {};
+
+ConfigurationArea::ConfigurationArea(const ConfigurationArea& other)
+	: m_adsClient(other.m_adsClient) {};
+
+ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
+	m_adsClient = other.m_adsClient;
+	return *this;
+}
+
+
+
+
+void ConfigurationArea::readModules() {
 
 	long n_err = 0;
 	uint32_t n_bytesRead = 0;
 
 	// Read length of list of module IDs https://infosys.beckhoff.com/content/1031/devicemanager/45035996536742667.html?id=5503267175110745821
 	uint16_t u16_len_module_id_list = 0;
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -36,7 +50,7 @@ void readModules(BasicADS& adsClient) {
 
 		uint32_t  u32_module_entry = 0;
 		uint32_t indexOffset = MDP_IDX_OFFS_DEVICE_AREA + i;
-		n_err = adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
+		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
 
 		if (n_err != ADSERR_NOERR) {
 			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -52,7 +66,7 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_NIC:
 			std::cout << "MODULETYPE_NIC " << u16_lowWord << std::endl;
-			//changeIPAddress(adsClient, u16_lowWord);
+			//changeIPAddress(u16_lowWord);
 			break;
 		case MODULETYPE_TIME:
 			std::cout << "MODULETYPE_TIME " << u16_lowWord << std::endl;
@@ -71,7 +85,7 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_TWINCAT:
 			std::cout << "MODULETYPE_TWINCAT " << u16_lowWord << std::endl;
-			//deleteAdsRoute(adsClient, u16_lowWord);
+			//deleteAdsRoute(u16_lowWord);
 			break;
 		case MODULETYPE_DATASTORE:
 			std::cout << "MODULETYPE_DATASTORE " << u16_lowWord << std::endl;
@@ -81,7 +95,7 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_CPU:
 			std::cout << "MODULETYPE_CPU " << u16_lowWord << std::endl;
-			readCPU(adsClient, u16_lowWord);
+			readCPU(u16_lowWord);
 			break;
 		case MODULETYPE_MEMORY:
 			std::cout << "MODULETYPE_MEMORY " << u16_lowWord << std::endl;
@@ -148,13 +162,13 @@ void readModules(BasicADS& adsClient) {
 			break;
 		case MODULETYPE_MISC:
 			std::cout << "MODULETYPE_MISC " << u16_lowWord << std::endl;
-			//rebootDevice(adsClient, u16_lowWord);
+			//rebootDevice(u16_lowWord);
 			break;
 		} // switch case
 	} // For loop
 }
 
-void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
+void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
 
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html 
 	long n_err = 0;
@@ -165,7 +179,7 @@ void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
 
 	char s_ipAddr[50] = {};
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -185,14 +199,14 @@ void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 		char new_address[] = "192.168.3.106";
 
 		// Write new address
-		n_err = adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
+		n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
 		if (n_err != ADSERR_NOERR) {
 			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 			exit(-1);
 		}
 
 		// Read new address again
-		n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
 		if (n_err != ADSERR_NOERR) {
 			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 			exit(-1);
@@ -203,7 +217,7 @@ void changeIPAddress(BasicADS& adsClient, unsigned short moduleId) {
 	}
 }
 
-void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
+void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
 	char route_name[] = "CX-50C9E8";
 	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl;
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382 
@@ -220,7 +234,7 @@ void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
 	u32_del_ads_route_idx = (u32_del_ads_route_idx << 16) + 1; // Subindex "Write Data"
 
 	long n_err = 0;
-	n_err = adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
@@ -231,7 +245,7 @@ void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId) {
 }
 
 
-void readCPU(BasicADS& adsClient, unsigned short moduleId) {
+void ConfigurationArea::readCPU(unsigned short moduleId) {
 
 	std::cout << ">>> Read CPU Information:" << std::endl;
 	long n_err = 0;
@@ -250,7 +264,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	u32_cpu_freq_idx = (u32_cpu_freq_idx << 16) + 1;   // 1 = Subindex of CPU frequency
 
 	uint32_t u32_cpu_freq = 0;
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_freq_idx, sizeof(u32_cpu_freq), &u32_cpu_freq, &n_bytesRead);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_freq_idx, sizeof(u32_cpu_freq), &u32_cpu_freq, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -270,7 +284,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	u32_cpu_usage_idx = (u32_cpu_usage_idx << 16) + 2;	// 2 = Subindex of CPU usage
 
 	uint16_t u16_cpu_usage = 0;
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_usage_idx, sizeof(u16_cpu_usage), &u16_cpu_usage, &n_bytesRead);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_usage_idx, sizeof(u16_cpu_usage), &u16_cpu_usage, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -290,7 +304,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	u32_cpu_temp_idx = (u32_cpu_temp_idx << 16) + 3; // 3 = Subindex of CPU temeprature
 
 	uint16_t u16_cpu_temperature = 0;
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_temp_idx, sizeof(u16_cpu_temperature), &u16_cpu_temperature, &n_bytesRead);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_temp_idx, sizeof(u16_cpu_temperature), &u16_cpu_temperature, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -299,7 +313,7 @@ void readCPU(BasicADS& adsClient, unsigned short moduleId) {
 	std::cout << ">>> CPU temperature: " << u16_cpu_temperature << " C" << std::endl;
 }
 
-void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
+void ConfigurationArea::rebootDevice(unsigned short moduleId) {
 
 	std::cout << ">>> Read Miscellaneous Information:" << std::endl;
 	long n_err = 0;
@@ -316,7 +330,7 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	u32_secWizard = (u32_secWizard << 16) + 4; // 4 == Subindex for Security Wizard
 
 	unsigned char bSecWizardState = 0;
-	n_err = adsClient.AdsReadReq(MDP_IDX_GRP, u32_secWizard, sizeof(bSecWizardState), &bSecWizardState, &n_bytesRead);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_secWizard, sizeof(bSecWizardState), &bSecWizardState, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
@@ -336,7 +350,7 @@ void rebootDevice(BasicADS& adsClient, unsigned short moduleId) {
 	u32_reboot = (u32_reboot << 16) + 1; // SubIndex = 1 as described in https://infosys.beckhoff.com/content/1033/devicemanager/263036171.html
 	unsigned char dummy = 0;
 
-	n_err = adsClient.AdsWriteReq(MDP_IDX_GRP, u32_reboot, sizeof(dummy), &dummy);
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_reboot, sizeof(dummy), &dummy);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;

@@ -3,10 +3,25 @@
 
 #include "BasicADS.h"
 
-void readModules(BasicADS& adsClient);
-void readCPU(BasicADS& adsClient, unsigned short moduleId);
-void rebootDevice(BasicADS& adsClient, unsigned short moduleId);
-void changeIPAddress(BasicADS& adsClient, unsigned short moduleId);
-void deleteAdsRoute(BasicADS& adsClient, unsigned short moduleId);
+class ConfigurationArea {
+public:
+	ConfigurationArea(BasicADS* adsClient);
+		
+	virtual ~ConfigurationArea() {};
+
+	ConfigurationArea(const ConfigurationArea& other);
+
+	ConfigurationArea& operator=(const ConfigurationArea& other);
+
+	void readModules();
+
+private:
+	void readCPU(unsigned short moduleId);
+	void rebootDevice(unsigned short moduleId);
+	void changeIPAddress(unsigned short moduleId);
+	void deleteAdsRoute(unsigned short moduleId);
+
+	BasicADS& m_adsClient;
+};
 
 #endif

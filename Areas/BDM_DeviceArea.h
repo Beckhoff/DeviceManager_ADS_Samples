@@ -3,6 +3,21 @@
 
 #include "BasicADS.h"
 
-void readSerialNumber(BasicADS& adsClient);
+
+class DeviceArea{
+public:
+	DeviceArea(BasicADS* adsClient);
+
+	virtual ~DeviceArea() {};
+
+	DeviceArea(const DeviceArea& other);
+
+	DeviceArea& operator=(const DeviceArea& other);
+
+	void readSerialNumber();
+
+private:
+	BasicADS& m_adsClient;
+};
 
 #endif

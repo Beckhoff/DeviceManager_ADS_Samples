@@ -13,13 +13,13 @@ int main() {
 	static const AmsNetId remoteNetId{ 5, 69, 55, 236, 1, 1 };
 
 	auto adsClient = std::shared_ptr<BasicADS>(new TC1000AdsClient(remoteNetId));
+	
+	ConfigurationArea configArea(adsClient.get());
+	configArea.readModules();
 
-	// General Area
-	readDeviceName(*adsClient);
+	GeneralArea genArea(adsClient.get());
+	genArea.readDeviceName();
 
-	// Device Area
-	readSerialNumber(*adsClient);
-
-	// Configuration Area
-	readModules(*adsClient);
+	DeviceArea devArea(adsClient.get());
+	devArea.readSerialNumber();
 }

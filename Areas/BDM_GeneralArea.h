@@ -3,6 +3,20 @@
 
 #include "BasicADS.h"
 
-void readDeviceName(BasicADS& adsClient);
+class GeneralArea {
+public:
+	GeneralArea(BasicADS* adsClient);
+
+	virtual ~GeneralArea() {};
+
+	GeneralArea(const GeneralArea& other);
+
+	GeneralArea& operator=(const GeneralArea& other);
+
+	void readDeviceName();
+
+private:
+	BasicADS& m_adsClient;
+};
 
 #endif
