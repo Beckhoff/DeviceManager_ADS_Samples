@@ -2,6 +2,8 @@
 
 This example shows how to get and set system information made available by the [Beckhoff Device Manager](https://infosys.beckhoff.com/content/1033/devicemanager/262925835.html) using [ADS](https://infosys.beckhoff.com/content/1033/tcinfosys3/11291871243.html). While this example uses C++, the general procedure can be adapted to any ADS implementation. 
 
+The examples in this repository are continuously developed. If the functionality you want is not already included, feel free to create an [Issue](https://github.com/Beckhoff/DeviceManager_ADS_Samples/issues/new/choose) describing your use case. 
+
 The project defines two build targets:
  
 #### - DevMan_Generic
