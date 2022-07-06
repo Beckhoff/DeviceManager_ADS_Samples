@@ -13,6 +13,12 @@ The project defines two build targets:
   - Utilize the libraries shipped with the TC1000 ADS Router installtion
   - Tested on Windows and TwinCAT/BSD
 
+## Notes on TwinCAT/BSD
+
+The following packages are required to build and run this example:
+  - os-generic-userland-devtools
+  - cmake
+  - git
 
 ## Build & Run
 In order to build and run the examples, do the following:
