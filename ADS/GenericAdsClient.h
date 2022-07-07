@@ -24,12 +24,12 @@ public:
     };
 
 
-    uint32_t AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData, uint32_t *pBytesRead)
+    int32_t AdsReadReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData, uint32_t *pBytesRead)
     {
         return m_adsClient->ReadReqEx2(indexGroup, indexOffset, length, pData, (unsigned int*)pBytesRead);
     };
 
-    uint32_t AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData){
+    int32_t AdsWriteReq(uint32_t indexGroup, uint32_t indexOffset, uint32_t length, void *pData){
         return m_adsClient->WriteReqEx(indexGroup, indexOffset, length, pData);
     };
 
