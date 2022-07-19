@@ -25,7 +25,7 @@ GeneralArea& GeneralArea::operator=(const GeneralArea& other) {
 
 void GeneralArea::readDeviceName() {
 
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	uint32_t strLen = 0;
 	char s_deviceName[50];
 

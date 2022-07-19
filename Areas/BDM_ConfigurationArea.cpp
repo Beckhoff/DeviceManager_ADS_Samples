@@ -31,7 +31,7 @@ ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
 
 void ConfigurationArea::readModules() {
 
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
 	// Read length of list of module IDs https://infosys.beckhoff.com/content/1031/devicemanager/45035996536742667.html?id=5503267175110745821
@@ -171,7 +171,7 @@ void ConfigurationArea::readModules() {
 void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
 
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html 
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	uint32_t strLen = 0;
 
 	uint32_t u32_NIC_properties = 0;
@@ -233,7 +233,7 @@ void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
 	uint32_t u32_del_ads_route_idx = 0xB001 + (moduleId << 4);
 	u32_del_ads_route_idx = (u32_del_ads_route_idx << 16) + 1; // Subindex "Write Data"
 
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
@@ -248,7 +248,7 @@ void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
 void ConfigurationArea::readCPU(unsigned short moduleId) {
 
 	std::cout << ">>> Read CPU Information:" << std::endl;
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
 	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
@@ -316,7 +316,7 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 void ConfigurationArea::rebootDevice(unsigned short moduleId) {
 
 	std::cout << ">>> Read Miscellaneous Information:" << std::endl;
-	uint32_t n_err = 0;
+	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
 	/***********************************************
