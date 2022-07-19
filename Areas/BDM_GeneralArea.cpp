@@ -32,7 +32,7 @@ void GeneralArea::readDeviceName() {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_NAME, sizeof(s_deviceName), s_deviceName, &strLen);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 	s_deviceName[strLen] = 0; // End String

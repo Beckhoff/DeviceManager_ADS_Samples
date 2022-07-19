@@ -39,7 +39,7 @@ void ConfigurationArea::readModules() {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 
@@ -53,7 +53,7 @@ void ConfigurationArea::readModules() {
 		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
 
 		if (n_err != ADSERR_NOERR) {
-			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 			break;
 		}
 
@@ -182,7 +182,7 @@ void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 
@@ -201,14 +201,14 @@ void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
 		// Write new address
 		n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
 		if (n_err != ADSERR_NOERR) {
-			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 			exit(-1);
 		}
 
 		// Read new address again
 		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
 		if (n_err != ADSERR_NOERR) {
-			std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 			exit(-1);
 		}
 		s_ipAddr[strLen] = 0;
@@ -237,7 +237,7 @@ void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
 	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 
@@ -267,7 +267,7 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_freq_idx, sizeof(u32_cpu_freq), &u32_cpu_freq, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 
@@ -287,7 +287,7 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_usage_idx, sizeof(u16_cpu_usage), &u16_cpu_usage, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 
@@ -307,7 +307,7 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_temp_idx, sizeof(u16_cpu_temperature), &u16_cpu_temperature, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 	std::cout << ">>> CPU temperature: " << u16_cpu_temperature << " C" << std::endl;
@@ -333,7 +333,7 @@ void ConfigurationArea::rebootDevice(unsigned short moduleId) {
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_secWizard, sizeof(bSecWizardState), &bSecWizardState, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 	std::cout << ">>> Security Wizard: " << std::boolalpha << static_cast<bool>(bSecWizardState) << std::endl;
@@ -353,7 +353,7 @@ void ConfigurationArea::rebootDevice(unsigned short moduleId) {
 	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_reboot, sizeof(dummy), &dummy);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cout << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
 	}
 	std::cout << ">>> Reboot Requested" << std::endl;
