@@ -148,6 +148,10 @@ void ConfigurationArea::deleteAdsRoute() {
 	char route_name[] = "CX-50C9E8";
 	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl; 
 
+
+	// Deleting ADS Route
+
+
 	char service_transfer_object[50] = {};
 	size_t route_name_length = strlen(route_name);
 
