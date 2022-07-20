@@ -16,7 +16,10 @@ int main(){
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 
 	ConfigurationArea configArea(adsClient.get());
-	configArea.readModules();
+	configArea.readCPU();
+	//configArea.rebootDevice();
+	//configArea.changeIPAddress();
+	//configArea.deleteAdsRoute();
 
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();
