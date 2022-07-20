@@ -75,7 +75,7 @@ void ConfigurationArea::changeIPAddress() {
 	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(nic_modules), is_nic);
 
 	if (nic_modules.empty()) {
-		std::cout << "Not NIC modules found on device" << std::endl;
+		std::cout << "No NIC modules found on device" << std::endl;
 		return;
 	}
 	// Get ModuleId from first NIC module
@@ -138,7 +138,7 @@ void ConfigurationArea::deleteAdsRoute() {
 	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(twincat_modules), is_twincat);
 
 	if (twincat_modules.empty()) {
-		std::cout << "Not TWINCAT modules found on device" << std::endl;
+		std::cout << "No TWINCAT modules found on device" << std::endl;
 		return;
 	}
 
@@ -180,7 +180,7 @@ void ConfigurationArea::readCPU() {
 	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(cpu_modules), is_cpu);
 	
 	if (cpu_modules.empty()) {
-		std::cout << "Not CPU modules found on device" << std::endl;
+		std::cout << "No CPU modules found on device" << std::endl;
 		return;
 	}
 
@@ -256,7 +256,7 @@ void ConfigurationArea::readStateSecurityWizard() {
 	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
 
 	if (misc_modules.empty()) {
-		std::cout << "Not MISC modules found on device" << std::endl;
+		std::cout << "No MISC modules found on device" << std::endl;
 		return;
 	}
 	// Get ModuleId from first MISC module
@@ -295,7 +295,7 @@ void ConfigurationArea::rebootDevice() {
 	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
 
 	if (misc_modules.empty()) {
-		std::cout << "Not MISC modules found on device" << std::endl;
+		std::cout << "No MISC modules found on device" << std::endl;
 		return;
 	}
 	// Get ModuleId from first MISC module
