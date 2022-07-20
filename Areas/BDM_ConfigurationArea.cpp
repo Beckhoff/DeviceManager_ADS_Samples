@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cstring>
 #include <cstdint>
+#include <algorithm>
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
@@ -13,23 +14,8 @@
 #include "AdsDef.h"
 #endif
 
-
-
 ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
-	: m_adsClient(*adsClient) {};
-
-ConfigurationArea::ConfigurationArea(const ConfigurationArea& other)
-	: m_adsClient(other.m_adsClient) {};
-
-ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
-	m_adsClient = other.m_adsClient;
-	return *this;
-}
-
-
-
-
-void ConfigurationArea::readModules() {
+	: m_adsClient(*adsClient) {
 
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
@@ -60,117 +46,43 @@ void ConfigurationArea::readModules() {
 		uint16_t u16_highWord = u32_module_entry >> 16; // ModuleType
 		uint16_t u16_lowWord = u32_module_entry & 0xFF; // ModuleId
 
-		switch (u16_highWord) {
-		case MODULETYPE_ACCESSCTRL:
-			std::cout << "MODULETYPE_ACCESSCTRL " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_NIC:
-			std::cout << "MODULETYPE_NIC " << u16_lowWord << std::endl;
-			//changeIPAddress(u16_lowWord);
-			break;
-		case MODULETYPE_TIME:
-			std::cout << "MODULETYPE_TIME " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_USERMGMT:
-			std::cout << "MODULETYPE_USERMGMT " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_RAS:
-			std::cout << "MODULETYPE_RAS " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FTP:
-			std::cout << "MODULETYPE_FTP " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_SMB:
-			std::cout << "MODULETYPE_SMB " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_TWINCAT:
-			std::cout << "MODULETYPE_TWINCAT " << u16_lowWord << std::endl;
-			//deleteAdsRoute(u16_lowWord);
-			break;
-		case MODULETYPE_DATASTORE:
-			std::cout << "MODULETYPE_DATASTORE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_SOFTWARE:
-			std::cout << "MODULETYPE_SOFTWARE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_CPU:
-			std::cout << "MODULETYPE_CPU " << u16_lowWord << std::endl;
-			readCPU(u16_lowWord);
-			break;
-		case MODULETYPE_MEMORY:
-			std::cout << "MODULETYPE_MEMORY " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_LOGFILE:
-			std::cout << "MODULETYPE_LOGFILE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FIREWALLCE:
-			std::cout << "MODULETYPE_FIREWALLCE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FW_RULES:
-			std::cout << "MODULETYPE_FW_RULES " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FSO:
-			std::cout << "MODULETYPE_FSO " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_REGISTRY:
-			std::cout << "MODULETYPE_REGISTRY " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_PLC:
-			std::cout << "MODULETYPE_PLC " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_DISPLAY:
-			std::cout << "MODULETYPE_DISPLAY " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_EWF:
-			std::cout << "MODULETYPE_EWF " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FBWF:
-			std::cout << "MODULETYPE_FBWF " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_REGFILTER:
-			std::cout << "MODULETYPE_REGFILTER " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_SILICONDRIVE:
-			std::cout << "MODULETYPE_SILICONDRIVE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_OS:
-			std::cout << "MODULETYPE_OS " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_RAID:
-			std::cout << "MODULETYPE_RAID " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_CX9FLASH:
-			std::cout << "MODULETYPE_CX9FLASH " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_FAN:
-			std::cout << "MODULETYPE_FAN " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_MAINBOARD:
-			std::cout << "MODULETYPE_MAINBOARD " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_DISKMGMT:
-			std::cout << "MODULETYPE_DISKMGMT " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_UPS:
-			std::cout << "MODULETYPE_UPS " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_PHYSICALDRIVE:
-			std::cout << "MODULETYPE_PHYSICALDRIVE " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_MASSSTORAGEMONITORING:
-			std::cout << "MODULETYPE_MASSSTORAGEMONITORING " << u16_lowWord << std::endl;
-			break;
-		case MODULETYPE_MISC:
-			std::cout << "MODULETYPE_MISC " << u16_lowWord << std::endl;
-			//rebootDevice(u16_lowWord);
-			break;
-		} // switch case
-	} // For loop
+		DeviceManager::Module module = {
+			u32_module_entry >> 16, // ModuleType
+			u32_module_entry & 0xFF // ModuleId
+		};
+
+		m_modules.push_back(module);
+	}
+};
+
+ConfigurationArea::ConfigurationArea(const ConfigurationArea& other)
+	: m_adsClient(other.m_adsClient)
+	, m_modules(other.m_modules) {};
+
+ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
+	m_adsClient	= other.m_adsClient;
+	m_modules	= other.m_modules;
+	return *this;
 }
 
-void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
+void ConfigurationArea::changeIPAddress() {
+	// MODULETYPE_NIC
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html
 
-	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html 
+	// Get all NIC modules
+	std::vector<DeviceManager::Module> nic_modules;
+	auto is_nic = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_NIC; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(nic_modules), is_nic);
+
+	if (nic_modules.empty()) {
+		std::cout << "Not NIC modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first NIC module
+	uint16_t moduleId = nic_modules.front().ModuleId;
+	
+	std::cout << ">>> Changing IP-Address..." << std::endl;
+
 	int32_t n_err = 0;
 	uint32_t strLen = 0;
 
@@ -190,37 +102,51 @@ void ConfigurationArea::changeIPAddress(unsigned short moduleId) {
 
 	std::cout << ">>> Current IP-Address:: " << s_ipAddr << std::endl;
 
-	// Change IP-Address of NIC 1
 
-	if (moduleId == 1) {
+	// Change IP-Address of first NIC
 
-		std::cout << ">>> Changing IP-Address..." << std::endl;
 
-		char new_address[] = "192.168.3.106";
+	std::cout << ">>> Performing address change..." << std::endl;
 
-		// Write new address
-		n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
-		if (n_err != ADSERR_NOERR) {
-			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-			exit(-1);
-		}
+	char new_address[] = "192.168.3.106";
 
-		// Read new address again
-		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
-		if (n_err != ADSERR_NOERR) {
-			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-			exit(-1);
-		}
-		s_ipAddr[strLen] = 0;
-
-		std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
+	// Write new address
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
 	}
+
+	// Read new address again
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+	s_ipAddr[strLen] = 0;
+
+	std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
 }
 
-void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
-	char route_name[] = "CX-50C9E8";
-	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl;
+void ConfigurationArea::deleteAdsRoute() {
+	// MODULETYPE_TWINCAT
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382 
+
+	// Get all TWINCAT modules
+	std::vector<DeviceManager::Module> twincat_modules;
+	auto is_twincat = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_TWINCAT; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(twincat_modules), is_twincat);
+
+	if (twincat_modules.empty()) {
+		std::cout << "Not TWINCAT modules found on device" << std::endl;
+		return;
+	}
+
+	// Get ModuleId from first TWINCAT module
+	uint16_t moduleId = twincat_modules.front().ModuleId;
+
+	char route_name[] = "CX-50C9E8";
+	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl; 
 
 	char service_transfer_object[50] = {};
 	size_t route_name_length = strlen(route_name);
@@ -244,20 +170,31 @@ void ConfigurationArea::deleteAdsRoute(unsigned short moduleId) {
 	std::cout << ">>> Route deleteded successful" << std::endl;
 }
 
+void ConfigurationArea::readCPU() {
+	// MODULETYPE_CPU
+	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
 
-void ConfigurationArea::readCPU(unsigned short moduleId) {
+	// Get all CPU modules
+	std::vector<DeviceManager::Module> cpu_modules;
+	auto is_cpu = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_CPU; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(cpu_modules), is_cpu);
+	
+	if (cpu_modules.empty()) {
+		std::cout << "Not CPU modules found on device" << std::endl;
+		return;
+	}
+
+	// Get ModuleId from first CPU module
+	uint16_t moduleId = cpu_modules.front().ModuleId;
 
 	std::cout << ">>> Read CPU Information:" << std::endl;
+
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
-	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
 
-	/***********************************************
-	 *                                             *
-	 *             Read CPU frqeuency              *
-	 *                                             *
-	 ***********************************************/
+	 // Read CPU frqeuency
+
 
 	uint32_t u32_cpu_freq_idx = 0;
 	u32_cpu_freq_idx = 0x8000 + (moduleId << 4) + 1; // +1 for CPU properties table
@@ -273,11 +210,9 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 
 	std::cout << ">>> CPU frequency: " << u32_cpu_freq << "MHz" << std::endl;
 
-	/***********************************************
-	 *                                             *
-	 *               Read CPU usage                *
-	 *                                             *
-	 ***********************************************/
+
+	 // Read CPU usage
+
 
 	uint32_t u32_cpu_usage_idx = 0;
 	u32_cpu_usage_idx = 0x8000 + (moduleId << 4) + 1;	// + 1 for CPU properties table
@@ -293,11 +228,9 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 
 	std::cout << ">>> CPU usage: " << u16_cpu_usage << "%" << std::endl;
 
-	/***********************************************
-	 *                                             *
-	 *            Read CPU Temperature             *
-	 *                                             *
-	 ***********************************************/
+
+	 // Read CPU Temperature
+
 
 	uint32_t u32_cpu_temp_idx = 0;
 	u32_cpu_temp_idx = 0x8000 + (moduleId << 4) + 1; // + 1 for CPU properties table
@@ -313,17 +246,30 @@ void ConfigurationArea::readCPU(unsigned short moduleId) {
 	std::cout << ">>> CPU temperature: " << u16_cpu_temperature << " C" << std::endl;
 }
 
-void ConfigurationArea::rebootDevice(unsigned short moduleId) {
+void ConfigurationArea::readStateSecurityWizard() {
+	// MODULETYPE_MISC
+	// https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
 
-	std::cout << ">>> Read Miscellaneous Information:" << std::endl;
+	// Get all MISC modules
+	std::vector<DeviceManager::Module> misc_modules;
+	auto is_misc = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_MISC; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
+
+	if (misc_modules.empty()) {
+		std::cout << "Not MISC modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	std::cout << ">>> Read state of the SecurityWizard:" << std::endl;
+
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
-	/***********************************************
-	 *                                             *
-	 *    Read the state of the Security Wizard    *
-	 *                                             *
-	 ***********************************************/
+
+	// Read the state of the Security Wizard
+
 
 	uint32_t u32_secWizard = 0;
 	u32_secWizard = 0x8001 + (moduleId << 4);
@@ -337,13 +283,31 @@ void ConfigurationArea::rebootDevice(unsigned short moduleId) {
 		exit(-1);
 	}
 	std::cout << ">>> Security Wizard: " << std::boolalpha << static_cast<bool>(bSecWizardState) << std::endl;
+}
 
-	/**********************************************
-	 *                                            *
-	 *              Reboot the device             *
-	 *                                            *
-	 **********************************************/
-	 // https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
+void ConfigurationArea::rebootDevice() {
+	// MODULETYPE_MISC
+	// https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
+
+	// Get all MISC modules
+	std::vector<DeviceManager::Module> misc_modules;
+	auto is_misc = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_MISC; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
+
+	if (misc_modules.empty()) {
+		std::cout << "Not MISC modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	std::cout << ">>> Request reboot" << std::endl;
+
+	int32_t n_err = 0;
+	uint32_t n_bytesRead = 0;
+
+
+	// Reboot the device
 
 	uint32_t u32_reboot = 0;
 	u32_reboot = 0xB001 + (moduleId << 4);

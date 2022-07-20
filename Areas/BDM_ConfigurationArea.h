@@ -1,7 +1,18 @@
 #ifndef BDM_CONFIGURATION_AREA_H
 #define BDM_CONFIGURATION_AREA_H
 
+#include <vector>
+
 #include "BasicADS.h"
+
+namespace DeviceManager {
+	struct Module {
+		uint16_t ModuleType;
+		uint16_t ModuleId;
+	};
+}
+
+
 
 class ConfigurationArea {
 public:
@@ -13,14 +24,15 @@ public:
 
 	ConfigurationArea& operator=(const ConfigurationArea& other);
 
-	void readModules();
+	void changeIPAddress();
+	void deleteAdsRoute();
+	void readCPU();
+	void readStateSecurityWizard();
+	void rebootDevice();
 
 private:
-	void readCPU(unsigned short moduleId);
-	void rebootDevice(unsigned short moduleId);
-	void changeIPAddress(unsigned short moduleId);
-	void deleteAdsRoute(unsigned short moduleId);
 
+	std::vector<DeviceManager::Module> m_modules;
 	BasicADS& m_adsClient;
 };
 

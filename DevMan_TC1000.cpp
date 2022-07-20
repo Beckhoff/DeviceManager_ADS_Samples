@@ -15,7 +15,10 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new TC1000AdsClient(remoteNetId));
 	
 	ConfigurationArea configArea(adsClient.get());
-	configArea.readModules();
+	configArea.readCPU();
+	//configArea.rebootDevice();
+	//configArea.changeIPAddress();
+	//configArea.deleteAdsRoute();
 
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();
