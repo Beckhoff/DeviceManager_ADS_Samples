@@ -32,6 +32,8 @@ public:
 
 private:
 
+	template <uint16_t ModuleType> std::vector<DeviceManager::Module> get_modules();
+
 	std::vector<DeviceManager::Module> m_modules;
 	BasicADS& m_adsClient;
 };

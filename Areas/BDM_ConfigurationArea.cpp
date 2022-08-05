@@ -65,15 +65,22 @@ ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
 	return *this;
 }
 
+
+template<uint16_t ModuleType>
+inline std::vector<DeviceManager::Module> ConfigurationArea::get_modules()
+{
+	std::vector<DeviceManager::Module> modules;
+	auto test_module = [](const DeviceManager::Module& m) { return m.ModuleType == ModuleType; };
+	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(modules), test_module);
+	return modules;
+}
+
 void ConfigurationArea::changeIPAddress() {
 	// MODULETYPE_NIC
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html
 
 	// Get all NIC modules
-	std::vector<DeviceManager::Module> nic_modules;
-	auto is_nic = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_NIC; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(nic_modules), is_nic);
-
+	auto nic_modules = get_modules<MODULETYPE_NIC>();
 	if (nic_modules.empty()) {
 		std::cout << "No NIC modules found on device" << std::endl;
 		return;
@@ -133,10 +140,7 @@ void ConfigurationArea::deleteAdsRoute() {
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382 
 
 	// Get all TWINCAT modules
-	std::vector<DeviceManager::Module> twincat_modules;
-	auto is_twincat = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_TWINCAT; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(twincat_modules), is_twincat);
-
+	auto twincat_modules = get_modules<MODULETYPE_TWINCAT>();
 	if (twincat_modules.empty()) {
 		std::cout << "No TWINCAT modules found on device" << std::endl;
 		return;
@@ -179,10 +183,7 @@ void ConfigurationArea::readCPU() {
 	// https://infosys.beckhoff.com/content/1033/devicemanager/54043195791430411.html?id=2286125776581746345
 
 	// Get all CPU modules
-	std::vector<DeviceManager::Module> cpu_modules;
-	auto is_cpu = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_CPU; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(cpu_modules), is_cpu);
-	
+	auto cpu_modules = get_modules<MODULETYPE_CPU>();
 	if (cpu_modules.empty()) {
 		std::cout << "No CPU modules found on device" << std::endl;
 		return;
@@ -255,10 +256,7 @@ void ConfigurationArea::readStateSecurityWizard() {
 	// https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
 
 	// Get all MISC modules
-	std::vector<DeviceManager::Module> misc_modules;
-	auto is_misc = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_MISC; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
-
+	auto misc_modules = get_modules<MODULETYPE_MISC>();
 	if (misc_modules.empty()) {
 		std::cout << "No MISC modules found on device" << std::endl;
 		return;
@@ -294,10 +292,7 @@ void ConfigurationArea::rebootDevice() {
 	// https://infosys.beckhoff.com/content/1033/devicemanager/263010571.html?id=2359555515732312853 
 
 	// Get all MISC modules
-	std::vector<DeviceManager::Module> misc_modules;
-	auto is_misc = [](const DeviceManager::Module& m) { return m.ModuleType == MODULETYPE_MISC; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(misc_modules), is_misc);
-
+	auto misc_modules = get_modules<MODULETYPE_MISC>();
 	if (misc_modules.empty()) {
 		std::cout << "No MISC modules found on device" << std::endl;
 		return;
