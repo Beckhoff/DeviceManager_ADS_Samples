@@ -385,7 +385,6 @@ void ConfigurationArea::deleteFile(char file_name[], bool bRecursive)
 		case 3:
 			uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sto_state + 2);
 			std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
-
 		}
 	}
 }
