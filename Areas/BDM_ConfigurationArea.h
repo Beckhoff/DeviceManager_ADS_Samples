@@ -29,6 +29,7 @@ public:
 	void readCPU();
 	void readStateSecurityWizard();
 	void rebootDevice();
+	void deleteFile(char file_name[], bool bRecursive = false);
 
 private:
 

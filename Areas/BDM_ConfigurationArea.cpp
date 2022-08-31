@@ -88,7 +88,7 @@ void ConfigurationArea::changeIPAddress() {
 	// Get ModuleId from first NIC module
 	uint16_t moduleId = nic_modules.front().ModuleId;
 	
-	std::cout << ">>> Changing IP-Address..." << std::endl;
+	std::cout << "> Changing IP-Address..." << std::endl;
 
 	int32_t n_err = 0;
 	uint32_t strLen = 0;
@@ -150,7 +150,7 @@ void ConfigurationArea::deleteAdsRoute() {
 	uint16_t moduleId = twincat_modules.front().ModuleId;
 
 	char route_name[] = "CX-50C9E8";
-	std::cout << ">>> Delete ADS Route \"" << route_name << "\"" << std::endl; 
+	std::cout << "> Delete ADS Route \"" << route_name << "\"" << std::endl; 
 
 
 	// Deleting ADS Route
@@ -192,7 +192,7 @@ void ConfigurationArea::readCPU() {
 	// Get ModuleId from first CPU module
 	uint16_t moduleId = cpu_modules.front().ModuleId;
 
-	std::cout << ">>> Read CPU Information:" << std::endl;
+	std::cout << "> Read CPU Information:" << std::endl;
 
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
@@ -264,7 +264,7 @@ void ConfigurationArea::readStateSecurityWizard() {
 	// Get ModuleId from first MISC module
 	uint16_t moduleId = misc_modules.front().ModuleId;
 
-	std::cout << ">>> Read state of the SecurityWizard:" << std::endl;
+	std::cout << "> Read state of the SecurityWizard:" << std::endl;
 
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
@@ -300,7 +300,7 @@ void ConfigurationArea::rebootDevice() {
 	// Get ModuleId from first MISC module
 	uint16_t moduleId = misc_modules.front().ModuleId;
 
-	std::cout << ">>> Request reboot" << std::endl;
+	std::cout << "> Request reboot" << std::endl;
 
 	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
@@ -320,4 +320,72 @@ void ConfigurationArea::rebootDevice() {
 		exit(-1);
 	}
 	std::cout << ">>> Reboot Requested" << std::endl;
+}
+
+void ConfigurationArea::deleteFile(char file_name[], bool bRecursive)
+{
+	// MODULETYPE_FSO
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
+
+	// Get all FSO modules
+	auto misc_modules = get_modules<MODULETYPE_FSO>();
+	if (misc_modules.empty()) {
+		std::cout << "No File System Object modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	std::cout << "> Delete file/folder \"" << file_name << "\"" << std::endl;
+
+	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
+	size_t file_name_length = strlen(file_name);
+
+	// Copy cbFilename to service transfer object
+	*reinterpret_cast<uint32_t*>(service_transfer_object) = file_name_length;
+	// Copy bRecursive to service transfer object
+	*reinterpret_cast<uint32_t*>(service_transfer_object + 4) = bRecursive;
+	// Copy filename to service transfer object
+	memcpy(service_transfer_object + 8, file_name, file_name_length);
+
+	uint32_t u32_del_file_idx = 0xB004 + (moduleId << 4);
+	u32_del_file_idx = (u32_del_file_idx << 16);
+
+	int32_t n_err = 0;
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_file_idx + 1 /* trigger */, 8 + file_name_length, service_transfer_object);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	// Read state of operation
+	char sto_state[6] = {}; // MDP state (1 byte), padding (1 byte), MDP error code (4 byte)
+
+	uint32_t n_bytes_read = 0;
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_del_file_idx + 3 /* state & data */, sizeof(sto_state), sto_state, &n_bytes_read);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsReadReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	if (n_bytes_read > 0) {
+		uint8_t mdp_status = *reinterpret_cast<uint8_t*>(sto_state);
+
+		switch (mdp_status) {
+
+		case 0:
+		case 1:
+			std::cout << ">>> File/folder deleteded successful" << std::endl;
+			break;
+		case 2:
+			std::cerr << ">>> Unspecified error occured" << std::endl;
+			break;
+		case 3:
+			uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sto_state + 2);
+			std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
+
+		}
+	}
 }

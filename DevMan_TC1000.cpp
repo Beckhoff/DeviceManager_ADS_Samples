@@ -19,6 +19,7 @@ int main() {
 	//configArea.rebootDevice();
 	//configArea.changeIPAddress();
 	//configArea.deleteAdsRoute();
+	//configArea.deleteFile(R"(C:\test)");
 
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();
