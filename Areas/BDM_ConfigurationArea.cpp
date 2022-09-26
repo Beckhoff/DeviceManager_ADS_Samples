@@ -14,6 +14,8 @@
 #include "AdsDef.h"
 #endif
 
+#define LARGE_BUF_SIZE 1E5
+
 ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
 	: m_adsClient(*adsClient) {
 
@@ -386,5 +388,107 @@ void ConfigurationArea::deleteFile(char file_name[], bool bRecursive)
 			uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sto_state + 2);
 			std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
 		}
+	}
+}
+
+void ConfigurationArea::listFiles(char folder_name[])
+{
+	// MODULETYPE_FSO
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
+
+	// Get all FSO modules
+	auto misc_modules = get_modules<MODULETYPE_FSO>();
+	if (misc_modules.empty()) {
+		std::cout << "No File System Object modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	std::cout << "> List files/folder in \"" << folder_name << "\"" << std::endl;
+
+	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
+	size_t folder_name_length = strlen(folder_name);
+
+	// Copy cbFilename to service transfer object
+	*reinterpret_cast<uint32_t*>(service_transfer_object) = folder_name_length;
+	// Copy folder name to service transfer object
+	memcpy(service_transfer_object + 4, folder_name, folder_name_length);
+
+	uint32_t u32_dir_idx = 0xB000 + (moduleId << 4);
+	u32_dir_idx = (u32_dir_idx << 16);
+
+	int32_t n_err = 0;
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, 8 + folder_name_length, service_transfer_object);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	// Read state and data of operation
+
+	// Create a large buffer because it is not possible to predict the size of data returned by reading the service transfer object
+	auto buffer = std::shared_ptr<char[]>(new char[LARGE_BUF_SIZE]);
+
+	uint32_t n_bytes_read = 0;
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_dir_idx + 3 /* state & data */, LARGE_BUF_SIZE, buffer.get(), &n_bytes_read);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsReadReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+	uint8_t mdp_status = *reinterpret_cast<uint8_t*>(buffer.get());
+
+	if (mdp_status == 1) { // No error; data available
+		// Ignore the first two MDP state bytes
+		char* dir_sdo_data = buffer.get() + 2;
+
+		// Version = 0
+		uint32_t version		= *reinterpret_cast<uint32_t*>(dir_sdo_data);
+		// cbData
+		uint32_t cbData			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 4);
+		// cDirs
+		uint32_t cDirs			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 8);
+		// cFiles
+		uint32_t cFiles			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 12);
+		// nOffsFirstDir
+		uint32_t nOffsFirstDir	= *reinterpret_cast<uint32_t*>(dir_sdo_data + 16);
+		// nOffsFirstFile
+		uint32_t nOffsFirstFile = *reinterpret_cast<uint32_t*>(dir_sdo_data + 20);
+
+		// Iterate over directories
+		const char* announce_folders = (cDirs > 0) ? ">> Directories :" : " >> No directories found";
+		std::cout << announce_folders << std::endl;
+		char* dir_offset = dir_sdo_data + nOffsFirstDir;
+
+		for (int i_dir = 0; i_dir < cDirs; ++i_dir) {
+			DeviceManager::TDirInfo dirInfo = *reinterpret_cast<DeviceManager::PTDirInfo>(dir_offset);
+
+			char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
+			std::string sDirName(pDirName, dirInfo.cchName);
+			std::cout << ">>> " << sDirName << "/" << std::endl;
+
+			dir_offset = dir_sdo_data + dirInfo.nOffsNextDir; // Move forward to next TDirInfo
+		}
+
+		// Iterate over files
+		const char* announce_files = (cFiles > 0) ? ">> Files :" : " >> No files found";
+		std::cout << announce_files << std::endl;
+		char* file_offset = dir_sdo_data + nOffsFirstFile;
+
+		for (int i_files = 0; i_files < cFiles; ++i_files) {
+			DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
+
+			char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
+			std::string sFileName(pFileName, fileInfo.cchFile);
+			std::cout << ">>> " << sFileName << " [size: " << fileInfo.filesize << " byte]" << std::endl;
+
+			file_offset = dir_sdo_data + fileInfo.nOffsNextFile; // Move forward to next TFileInfo
+		}
+
+	} else if (mdp_status == 3) { // Error
+		uint32_t mdp_err = *reinterpret_cast<uint32_t*>(buffer.get() + 2);
+		std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
 	}
 }

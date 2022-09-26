@@ -10,6 +10,24 @@ namespace DeviceManager {
 		uint16_t ModuleType;
 		uint16_t ModuleId;
 	};
+
+#pragma pack ( push, 1 )
+	typedef struct _tagTDirInfo
+	{
+		uint32_t nOffsNextDir;
+		uint32_t cchName;
+		//char[cchName] szName
+	} TDirInfo, * PTDirInfo;
+
+	typedef struct _tagTFileInfo
+	{
+		uint32_t	nOffsNextFile;
+		__int64		filesize;
+		uint32_t	attribs;
+		uint32_t	cchFile;
+		//char[File] szName
+	} TFileInfo, * PTFileInfo;
+#pragma pack ( pop )
 }
 
 
@@ -30,6 +48,7 @@ public:
 	void readStateSecurityWizard();
 	void rebootDevice();
 	void deleteFile(char file_name[], bool bRecursive = false);
+	void listFiles(char folder_name[]);
 
 private:
 

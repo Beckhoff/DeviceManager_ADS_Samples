@@ -20,6 +20,8 @@ int main() {
 	//configArea.changeIPAddress();
 	//configArea.deleteAdsRoute();
 	//configArea.deleteFile(R"(C:\test)");
+	configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
+	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
 
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();
