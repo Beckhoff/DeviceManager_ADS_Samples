@@ -12,6 +12,17 @@ namespace DeviceManager {
 	};
 
 #pragma pack ( push, 1 )
+
+	typedef struct _tagTDir
+	{
+		uint32_t nVersion;
+		uint32_t cb;
+		uint32_t cDirs;
+		uint32_t cFiles;
+		uint32_t nOffsFirstDir;
+		uint32_t nOffsFirstFile;
+	} TDir, * PTDir;
+	
 	typedef struct _tagTDirInfo
 	{
 		uint32_t nOffsNextDir;

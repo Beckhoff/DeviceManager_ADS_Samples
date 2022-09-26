@@ -444,25 +444,14 @@ void ConfigurationArea::listFiles(char folder_name[])
 		// Ignore the first two MDP state bytes
 		char* dir_sdo_data = buffer.get() + 2;
 
-		// Version = 0
-		uint32_t version		= *reinterpret_cast<uint32_t*>(dir_sdo_data);
-		// cbData
-		uint32_t cbData			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 4);
-		// cDirs
-		uint32_t cDirs			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 8);
-		// cFiles
-		uint32_t cFiles			= *reinterpret_cast<uint32_t*>(dir_sdo_data + 12);
-		// nOffsFirstDir
-		uint32_t nOffsFirstDir	= *reinterpret_cast<uint32_t*>(dir_sdo_data + 16);
-		// nOffsFirstFile
-		uint32_t nOffsFirstFile = *reinterpret_cast<uint32_t*>(dir_sdo_data + 20);
+		DeviceManager::TDir dirInfo = *reinterpret_cast<DeviceManager::PTDir>(dir_sdo_data);
 
 		// Iterate over directories
-		const char* announce_folders = (cDirs > 0) ? ">> Directories :" : " >> No directories found";
+		const char* announce_folders = (dirInfo.cDirs > 0) ? ">> Directories :" : " >> No directories found";
 		std::cout << announce_folders << std::endl;
-		char* dir_offset = dir_sdo_data + nOffsFirstDir;
+		char* dir_offset = dir_sdo_data + dirInfo.nOffsFirstDir;
 
-		for (int i_dir = 0; i_dir < cDirs; ++i_dir) {
+		for (int i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
 			DeviceManager::TDirInfo dirInfo = *reinterpret_cast<DeviceManager::PTDirInfo>(dir_offset);
 
 			char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
@@ -473,11 +462,11 @@ void ConfigurationArea::listFiles(char folder_name[])
 		}
 
 		// Iterate over files
-		const char* announce_files = (cFiles > 0) ? ">> Files :" : " >> No files found";
+		const char* announce_files = (dirInfo.cFiles > 0) ? ">> Files :" : " >> No files found";
 		std::cout << announce_files << std::endl;
-		char* file_offset = dir_sdo_data + nOffsFirstFile;
+		char* file_offset = dir_sdo_data + dirInfo.nOffsFirstFile;
 
-		for (int i_files = 0; i_files < cFiles; ++i_files) {
+		for (int i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
 			DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
 
 			char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
