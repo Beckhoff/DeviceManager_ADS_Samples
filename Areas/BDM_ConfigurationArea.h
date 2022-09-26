@@ -2,6 +2,7 @@
 #define BDM_CONFIGURATION_AREA_H
 
 #include <vector>
+#include <fstream>
 
 #include "BasicADS.h"
 
@@ -37,8 +38,24 @@ namespace DeviceManager {
 		uint32_t	attribs;
 		uint32_t	cchFile;
 		//char[File] szName
-	} TFileInfo, * PTFileInfo;
+	} TFileInfo, *PTFileInfo;
 #pragma pack ( pop )
+
+	typedef struct _tagReadFileOut
+	{
+		uint32_t	cbData;
+		uint32_t	handle;
+		bool		bMoreData;
+		// BYTE[cbData]
+	} TReadFileOut, * PTReadFileOut;
+
+	typedef struct _tagReadFileIn
+	{
+		uint32_t	cbFileName;
+		uint32_t	handle;
+		uint32_t	cbMaxRead;
+		// BYTE[cbData]
+	} TReadFileIn, * PTReadFileIn;
 }
 
 
@@ -60,6 +77,7 @@ public:
 	void rebootDevice();
 	void deleteFile(char file_name[], bool bRecursive = false);
 	void listFiles(char folder_name[]);
+	void readDeviceFile(char file_name[], std::ofstream &local_file);
 
 private:
 
