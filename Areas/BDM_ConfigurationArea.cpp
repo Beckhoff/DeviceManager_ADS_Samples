@@ -322,7 +322,7 @@ void ConfigurationArea::rebootDevice() {
 	std::cout << ">>> Reboot Requested" << std::endl;
 }
 
-void ConfigurationArea::deleteFile(char file_name[], bool bRecursive)
+void ConfigurationArea::deleteFile(const char file_name[], bool bRecursive)
 {
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
