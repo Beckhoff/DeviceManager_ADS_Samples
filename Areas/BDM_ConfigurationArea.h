@@ -56,6 +56,16 @@ namespace DeviceManager {
 		uint32_t	cbMaxRead;
 		// BYTE[cbData]
 	} TReadFileIn, * PTReadFileIn;
+
+	typedef struct _tagWriteFileIn
+	{
+		uint32_t	cbFileName;
+		uint32_t	handle;
+		uint32_t	cbData;
+		uint32_t	bWriteComplete;
+		// char[cbFilename]
+		// BYTE[cbData]
+	} TWriteFileIn, * PTWriteFileIn;
 }
 
 
@@ -78,6 +88,10 @@ public:
 	void deleteFile(char file_name[], bool bRecursive = false);
 	void listFiles(char folder_name[]);
 	void readDeviceFile(char file_name[], std::ofstream &local_file);
+	void writeDeviceFile(const char file_name[], std::istream& data);
+
+	const size_t	m_large_buf		= 65536;
+	const uint32_t	m_cbWriteMax	= 1024;
 
 private:
 

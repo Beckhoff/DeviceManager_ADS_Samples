@@ -14,7 +14,6 @@
 #include "AdsDef.h"
 #endif
 
-#define LARGE_BUF_SIZE 1E5
 #define CB_MAX_READ 1024
 
 ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
@@ -430,10 +429,10 @@ void ConfigurationArea::listFiles(char folder_name[])
 	// Read state and data of operation
 
 	// Create a large buffer because it is not possible to predict the size of data returned by reading the service transfer object
-	auto buffer = std::shared_ptr<char[]>(new char[LARGE_BUF_SIZE]);
+	auto buffer = std::shared_ptr<char[]>(new char[m_large_buf]);
 
 	uint32_t n_bytes_read = 0;
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_dir_idx + 3 /* state & data */, LARGE_BUF_SIZE, buffer.get(), &n_bytes_read);
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_dir_idx + 3 /* state & data */, m_large_buf, buffer.get(), &n_bytes_read);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cerr << "Error AdsReadReq: 0x" << std::hex << n_err << std::endl;
@@ -503,7 +502,7 @@ void ConfigurationArea::readDeviceFile(char file_name[], std::ofstream& local_fi
 	size_t file_name_length = strlen(file_name);
 	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + file_name_length]);
 	char* pWBuf = sdo_wBuf.get();
-
+	
 	// Copy cbFilename to service transfer object
 	*reinterpret_cast<uint32_t*>(pWBuf) = file_name_length;
 	pWBuf += 4;
@@ -515,7 +514,6 @@ void ConfigurationArea::readDeviceFile(char file_name[], std::ofstream& local_fi
 	pWBuf += 4;
 	// Copy file name to service transfer object
 	memcpy(pWBuf, file_name, file_name_length);
-
 
 	uint32_t u32_rd_idx = 0xB001 + (moduleId << 4);
 	u32_rd_idx = (u32_rd_idx << 16);
@@ -529,7 +527,7 @@ void ConfigurationArea::readDeviceFile(char file_name[], std::ofstream& local_fi
 	}
 
 	// Read state and data of operation
-	// Create a buffer with for MDP state (2byte) + CB_MAX_READ
+	// Create a buffer for MDP state (2byte) + CB_MAX_READ
 	uint32_t cb_sdo_rBuf = 2 + CB_MAX_READ;
 
 	bool bComplete = false;
@@ -578,6 +576,138 @@ void ConfigurationArea::readDeviceFile(char file_name[], std::ofstream& local_fi
 			uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sdo_rBuf.get() + 2);
 			std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
 			bErr = true;
+		}
+	}
+}
+
+void ConfigurationArea::writeDeviceFile(const char file_name[], std::istream& data)
+{
+	// MODULETYPE_FSO
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
+
+	// Get all FSO modules
+	auto misc_modules = get_modules<MODULETYPE_FSO>();
+	if (misc_modules.empty()) {
+		std::cout << "No File System Object modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	std::cout << "> Write file " << file_name << " to target" << std::endl;
+
+	// Calcualte size of data:
+	data.seekg(0, data.end);
+	uint32_t data_length = (uint32_t)data.tellg();
+	data.seekg(0, data.beg);
+
+	uint32_t file_name_length = (uint32_t)strlen(file_name);
+
+	// Request write handle first
+	DeviceManager::TWriteFileIn write_info = {
+		file_name_length, // cbFilename
+		0, // Continuation handle
+		0, // cbData
+		0 // bWriteCompleted
+	};
+
+	// Create buffer for the SDO object to write
+	uint32_t cbWrite = sizeof(write_info) + file_name_length;// +cbDataWrite;
+	auto sdo_wBuf = std::shared_ptr<char[]>(new char[cbWrite]);
+	char* pWBuf = sdo_wBuf.get();
+
+	// Copy write info to buffer
+	*reinterpret_cast<DeviceManager::PTWriteFileIn>(pWBuf) = write_info;
+	// Copy file name to service transfer object
+	pWBuf += sizeof(write_info);
+	memcpy(pWBuf, file_name, file_name_length);
+
+
+	uint32_t u32_wrt_idx = 0xB002 + (moduleId << 4);
+	u32_wrt_idx = (u32_wrt_idx << 16);
+
+	int32_t n_err = 0;
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	// Read write handle and state of operation (MDP status (1byte), padding (1byte), Continuation handle (4 byte))
+	uint32_t cb_sdo_rBuf = 6;
+	auto sdo_rBuf = std::shared_ptr<char[]>(new char[cb_sdo_rBuf]);
+
+	uint32_t n_bytes_read = 0;
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_wrt_idx + 3 /* state & data */, cb_sdo_rBuf, sdo_rBuf.get(), &n_bytes_read);
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsReadReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	uint32_t wrt_hdl = 0;
+	uint8_t mdp_status = *reinterpret_cast<uint8_t*>(sdo_rBuf.get());
+
+	if (mdp_status == 1) { // No error; data available
+		wrt_hdl = *reinterpret_cast<uint32_t*>(sdo_rBuf.get() + 2);
+		int x = 5;
+	}
+	else if (mdp_status == 3) {
+		uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sdo_rBuf.get() + 2);
+		std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
+		exit(-1);
+	}
+
+	// Calculates the remaining bytes to write
+	auto f_remaining = [&]() -> uint32_t { return data_length - (uint32_t)data.tellg(); };
+
+	while (f_remaining() > 0) {
+
+		uint32_t cbDataWrite = (f_remaining() >= m_cbWriteMax) ? m_cbWriteMax : f_remaining();
+
+		DeviceManager::TWriteFileIn write_info = {
+			0, // cbFilename
+			wrt_hdl, // Continuation handle
+			cbDataWrite, // cbData
+			(cbDataWrite < m_cbWriteMax) ? 1 : 0 // Set to 1 to indicate the last write access
+		};
+
+		// Create buffer for the SDO object to write
+		uint32_t cbWrite = sizeof(write_info) + cbDataWrite;// +cbDataWrite;
+		auto sdo_wBuf = std::shared_ptr<char[]>(new char[cbWrite]);
+		char* pWBuf = sdo_wBuf.get();
+
+		// Copy write info to buffer
+		*reinterpret_cast<DeviceManager::PTWriteFileIn>(pWBuf) = write_info;
+		// Copy file name to service transfer object
+		pWBuf += sizeof(write_info);
+
+		// Copy data to SDO
+		data.read(pWBuf, cbDataWrite);
+
+		n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+
+		if (n_err != ADSERR_NOERR) {
+			std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+			exit(-1);
+		}
+
+		// Read state of write operation
+		char rd_state_buf[6] = {};
+		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_wrt_idx + 3 /* state & data */, sizeof(rd_state_buf), rd_state_buf, &n_bytes_read);
+
+		if (n_err != ADSERR_NOERR) {
+			std::cerr << "Error AdsReadReq: 0x" << std::hex << n_err << std::endl;
+			exit(-1);
+		}
+
+		uint8_t mdp_status = *reinterpret_cast<uint8_t*>(rd_state_buf);
+
+		if (mdp_status == 3) {
+			uint32_t mdp_err = *reinterpret_cast<uint32_t*>(sdo_rBuf.get() + 2);
+			std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
+			exit(-1);
 		}
 	}
 }
