@@ -14,8 +14,6 @@
 #include "AdsDef.h"
 #endif
 
-#define CB_MAX_READ 1024
-
 ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
 	: m_adsClient(*adsClient) {
 
@@ -502,17 +500,17 @@ void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& loc
 	size_t file_name_length = strlen(file_name);
 	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + file_name_length]);
 	char* pWBuf = sdo_wBuf.get();
+
+	DeviceManager::TReadFileIn write_info = {
+		file_name_length, // cbFileName
+		0, // Continuation handle
+		m_cbReadMax
+	};
 	
-	// Copy cbFilename to service transfer object
-	*reinterpret_cast<uint32_t*>(pWBuf) = file_name_length;
-	pWBuf += 4;
-	// Copy continuation handle to service transfer object
-	*reinterpret_cast<uint32_t*>(pWBuf) = 0;
-	pWBuf += 4;
-	// Copy cbMaxRead to service transfer object
-	*reinterpret_cast<uint32_t*>(pWBuf) = CB_MAX_READ;
-	pWBuf += 4;
+	// Copy read info SDO
+	*reinterpret_cast<DeviceManager::PTReadFileIn>(pWBuf) = write_info;
 	// Copy file name to service transfer object
+	pWBuf += sizeof(write_info);
 	memcpy(pWBuf, file_name, file_name_length);
 
 	uint32_t u32_rd_idx = 0xB001 + (moduleId << 4);
@@ -528,7 +526,7 @@ void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& loc
 
 	// Read state and data of operation
 	// Create a buffer for MDP state (2byte) + CB_MAX_READ
-	uint32_t cb_sdo_rBuf = 2 + CB_MAX_READ;
+	uint32_t cb_sdo_rBuf = 2 + m_cbReadMax;
 
 	bool bComplete = false;
 	bool bErr = false;
@@ -560,10 +558,9 @@ void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& loc
 				DeviceManager::TReadFileIn sdo_rd_in = {
 					0, // cbFileName
 					read_info.handle,
-					CB_MAX_READ
+					m_cbReadMax
 				};
 
-				int32_t n_err = 0;
 				n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_rd_idx + 1 /* trigger */, sizeof(sdo_rd_in), &sdo_rd_in);
 
 				if (n_err != ADSERR_NOERR) {

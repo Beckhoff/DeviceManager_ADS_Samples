@@ -92,6 +92,7 @@ public:
 
 	const size_t	m_large_buf		= 65536;
 	const uint32_t	m_cbWriteMax	= 1024;
+	const uint32_t	m_cbReadMax		= 1024;
 
 private:
 

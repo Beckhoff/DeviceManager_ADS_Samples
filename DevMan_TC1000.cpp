@@ -26,7 +26,7 @@ int main() {
 	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
 
 	// Read file from target
-	//std::ofstream current_config("CurrentConfig.tszip", std::ios::binary);
+	//std::ofstream current_config(R"(CurrentConfig.tszip)", std::ios::binary);
 	//configArea.readDeviceFile(R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)", current_config);
 	
 	// Write file to target
