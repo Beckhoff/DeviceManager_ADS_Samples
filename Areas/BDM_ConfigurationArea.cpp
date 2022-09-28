@@ -482,7 +482,7 @@ void ConfigurationArea::listFiles(char folder_name[])
 	}
 }
 
-void ConfigurationArea::readDeviceFile(char file_name[], std::ofstream& local_file)
+void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& local_file)
 {
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
