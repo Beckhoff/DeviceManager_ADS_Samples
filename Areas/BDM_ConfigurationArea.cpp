@@ -389,7 +389,7 @@ void ConfigurationArea::deleteFile(char file_name[], bool bRecursive)
 	}
 }
 
-void ConfigurationArea::listFiles(char folder_name[])
+void ConfigurationArea::listFiles(const char folder_name[])
 {
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 

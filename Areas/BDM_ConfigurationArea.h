@@ -86,7 +86,7 @@ public:
 	void readStateSecurityWizard();
 	void rebootDevice();
 	void deleteFile(char file_name[], bool bRecursive = false);
-	void listFiles(char folder_name[]);
+	void listFiles(const char folder_name[]);
 	void readDeviceFile(const char file_name[], std::ostream &local_file);
 	void writeDeviceFile(const char file_name[], std::istream& data);
 
