@@ -7,6 +7,7 @@
 #include <cstring>
 #include <cstdint>
 #include <algorithm>
+#include <assert.h>
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
@@ -324,6 +325,8 @@ void ConfigurationArea::rebootDevice() {
 
 void ConfigurationArea::deleteFile(const char file_name[], bool bRecursive)
 {
+	assert(file_name != NULL);
+	assert(strlen(file_name) > 0);
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
 
@@ -391,6 +394,8 @@ void ConfigurationArea::deleteFile(const char file_name[], bool bRecursive)
 
 void ConfigurationArea::listFiles(const char folder_name[])
 {
+	assert(folder_name != NULL);
+	assert(strlen(folder_name) > 0);
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
 
@@ -482,6 +487,8 @@ void ConfigurationArea::listFiles(const char folder_name[])
 
 void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& local_file)
 {
+	assert(file_name != NULL);
+	assert(strlen(file_name) > 0);
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
 
@@ -579,6 +586,8 @@ void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& loc
 
 void ConfigurationArea::writeDeviceFile(const char file_name[], std::istream& data)
 {
+	assert(file_name != NULL);
+	assert(strlen(file_name) > 0);
 	// MODULETYPE_FSO
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
 
