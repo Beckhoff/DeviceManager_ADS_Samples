@@ -34,6 +34,13 @@ int main(){
 	//std::ifstream tmc_file(source_file, std::ios::binary);
 	//configArea.writeDeviceFile(target_file, tmc_file);
 
+	// Copy file on target
+	//const char* source = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
+	//const char* dest = R"(C:\TwinCAT\3.1\CurrentConfig_backup.tszip)";
+	//const char* source = R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)";
+	//const char* dest = R"(/usr/local/etc/TwinCAT/3.1/CurrentConfig_backup.tszip)";
+	//configArea.copyDeviceFile(source, dest, 3);
+
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();
 

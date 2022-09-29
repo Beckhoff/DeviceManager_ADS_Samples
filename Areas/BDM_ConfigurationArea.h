@@ -66,6 +66,15 @@ namespace DeviceManager {
 		// char[cbFilename]
 		// BYTE[cbData]
 	} TWriteFileIn, * PTWriteFileIn;
+
+	typedef struct _tagCopyFileIn
+	{
+		uint32_t	cbSrc;
+		uint32_t	cbDst;
+		uint32_t	flags;
+		// char[cbSrc]
+		// char[cbDst]
+	} TCopyFileIn, * PTCopyFileIn;
 }
 
 
@@ -89,6 +98,7 @@ public:
 	void listFiles(const char folder_name[]);
 	void readDeviceFile(const char file_name[], std::ostream &local_file);
 	void writeDeviceFile(const char file_name[], std::istream& data);
+	void copyDeviceFile(const char source[], const char dest[], uint32_t flags);
 
 	const uint32_t	m_large_buf		= 65536;
 	const uint32_t	m_cbWriteMax	= 1024;
