@@ -23,6 +23,8 @@ int main(){
 	//configArea.deleteFile(R"(C:\test)");
 	//configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
 	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
+	//configArea.mkdir(R"(C:\TwinCAT\3.1\Boot\NewFolder)", false);
+	//configArea.mkdir(R"(/usr/local/etc/TwinCAT/3.1/Boot/NewFolder)", false); // TwinCAT/BSD
 
 	// Read file from target
 	//std::ofstream current_config(R"(CurrentConfig.tszip)", std::ios::binary);

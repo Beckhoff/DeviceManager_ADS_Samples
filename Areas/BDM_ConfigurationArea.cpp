@@ -787,3 +787,61 @@ void ConfigurationArea::copyDeviceFile(const char source[], const char dest[], u
 		exit(-1);
 	}
 }
+
+void ConfigurationArea::mkdir(const char path[], bool bRecursive)
+{
+	assert(path != NULL);
+	assert((strlen(path) > 0));
+
+	// MODULETYPE_FSO
+	// https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020 
+
+	// Get all FSO modules
+	auto misc_modules = get_modules<MODULETYPE_FSO>();
+	if (misc_modules.empty()) {
+		std::cout << "No File System Object modules found on device" << std::endl;
+		return;
+	}
+	// Get ModuleId from first MISC module
+	uint16_t moduleId = misc_modules.front().ModuleId;
+
+	uint32_t cb_path = (uint32_t)strlen(path);
+	std::cout << "> Create new folder: " << path << std::endl;
+
+	DeviceManager::TMkdirIn mkdirInfo = {
+		cb_path,
+		(uint32_t)bRecursive
+	};
+
+	uint32_t cbWrite = sizeof(mkdirInfo) + cb_path;
+	auto sdo_wBuf = std::shared_ptr<char[]>(new char[cbWrite]);
+
+	*reinterpret_cast<DeviceManager::PTMkdirIn>(sdo_wBuf.get()) = mkdirInfo;
+
+	memcpy(sdo_wBuf.get() + sizeof(mkdirInfo), path, cb_path);
+
+	uint32_t u32_mkdir_idx = 0xB005 + (moduleId << 4);
+	u32_mkdir_idx = (u32_mkdir_idx << 16);
+
+	int32_t n_err = 0;
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_mkdir_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+
+	if (n_err != ADSERR_NOERR) {
+		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
+		exit(-1);
+	}
+
+	// Read state of operation (MDP status (1byte), padding (1byte), Continuation handle (4 byte))
+	char rd_state_buf[6] = {};
+
+	uint32_t n_bytes_read = 0;
+	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_mkdir_idx + 3 /* state & data */, sizeof(rd_state_buf), rd_state_buf, &n_bytes_read);
+
+	uint8_t mdp_status = *reinterpret_cast<uint8_t*>(rd_state_buf);
+
+	if (mdp_status == 3) {
+		uint32_t mdp_err = *reinterpret_cast<uint32_t*>(rd_state_buf + 2);
+		std::cerr << ">>> MDP error: 0x" << std::hex << mdp_err << std::endl;
+		exit(-1);
+	}
+}

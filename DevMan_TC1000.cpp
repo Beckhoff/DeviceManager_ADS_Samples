@@ -25,6 +25,8 @@ int main() {
 	//configArea.deleteFile(R"(C:\test.txt)");
 	//configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
 	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
+	//configArea.mkdir(R"(C:\TwinCAT\3.1\Boot\NewFolder)", false);
+	//configArea.mkdir(R"(/usr/local/etc/TwinCAT/3.1/Boot/NewFolder)", false); // TwinCAT/BSD
 
 	// Read file from target
 	//std::ofstream current_config(R"(CurrentConfig.tszip)", std::ios::binary);
@@ -42,6 +44,7 @@ int main() {
 	//const char* source = R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)";
 	//const char* dest = R"(/usr/local/etc/TwinCAT/3.1/CurrentConfig_backup.tszip)";
 	//configArea.copyDeviceFile(source, dest, 3);
+
 
 	GeneralArea genArea(adsClient.get());
 	genArea.readDeviceName();

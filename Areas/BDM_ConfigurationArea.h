@@ -75,6 +75,13 @@ namespace DeviceManager {
 		// char[cbSrc]
 		// char[cbDst]
 	} TCopyFileIn, * PTCopyFileIn;
+
+	typedef struct _tagMkdirIn
+	{
+		uint32_t	cbFilename;
+		uint32_t	bRecursive;
+		// char[cbFilename]
+	} TMkdirIn, * PTMkdirIn;
 }
 
 
@@ -99,6 +106,7 @@ public:
 	void readDeviceFile(const char file_name[], std::ostream &local_file);
 	void writeDeviceFile(const char file_name[], std::istream& data);
 	void copyDeviceFile(const char source[], const char dest[], uint32_t flags);
+	void mkdir(const char path[], bool bRecursive);
 
 	const uint32_t	m_large_buf		= 65536;
 	const uint32_t	m_cbWriteMax	= 1024;
