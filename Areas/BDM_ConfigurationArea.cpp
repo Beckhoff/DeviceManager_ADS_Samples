@@ -136,7 +136,9 @@ void ConfigurationArea::changeIPAddress() {
 	std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
 }
 
-void ConfigurationArea::deleteAdsRoute() {
+void ConfigurationArea::deleteAdsRoute(const char route_name[]) {
+	assert(route_name != NULL);
+	assert(strlen(route_name) > 0);
 	// MODULETYPE_TWINCAT
 	// https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382 
 
@@ -150,7 +152,6 @@ void ConfigurationArea::deleteAdsRoute() {
 	// Get ModuleId from first TWINCAT module
 	uint16_t moduleId = twincat_modules.front().ModuleId;
 
-	char route_name[] = "CX-50C9E8";
 	std::cout << "> Delete ADS Route \"" << route_name << "\"" << std::endl; 
 
 

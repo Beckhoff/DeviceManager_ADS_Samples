@@ -81,7 +81,7 @@ public:
 	ConfigurationArea& operator=(const ConfigurationArea& other);
 
 	void changeIPAddress();
-	void deleteAdsRoute();
+	void deleteAdsRoute(const char route_name[]);
 	void readCPU();
 	void readStateSecurityWizard();
 	void rebootDevice();
