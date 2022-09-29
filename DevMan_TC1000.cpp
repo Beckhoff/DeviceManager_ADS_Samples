@@ -22,7 +22,7 @@ int main() {
 	//configArea.deleteAdsRoute();
 	
 	//configArea.deleteFile(R"(C:\test.txt)");
-	//configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
+	configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
 	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
 
 	// Read file from target

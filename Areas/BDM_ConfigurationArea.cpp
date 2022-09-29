@@ -119,7 +119,7 @@ void ConfigurationArea::changeIPAddress() {
 	char new_address[] = "192.168.3.106";
 
 	// Write new address
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, strlen(new_address), new_address);
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, (uint32_t)strlen(new_address), new_address);
 	if (n_err != ADSERR_NOERR) {
 		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
 		exit(-1);
@@ -158,7 +158,7 @@ void ConfigurationArea::deleteAdsRoute() {
 
 
 	char service_transfer_object[50] = {};
-	size_t route_name_length = strlen(route_name);
+	uint32_t route_name_length = (uint32_t)strlen(route_name);
 
 	// Copy length of route name to service transfer object
 	*reinterpret_cast<uint32_t*>(service_transfer_object) = route_name_length;
@@ -342,20 +342,24 @@ void ConfigurationArea::deleteFile(const char file_name[], bool bRecursive)
 	std::cout << "> Delete file/folder \"" << file_name << "\"" << std::endl;
 
 	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
-	size_t file_name_length = strlen(file_name);
+	char* p_sdo = service_transfer_object;
+
+	uint32_t file_name_length = (uint32_t)strlen(file_name);
 
 	// Copy cbFilename to service transfer object
-	*reinterpret_cast<uint32_t*>(service_transfer_object) = file_name_length;
+	*reinterpret_cast<uint32_t*>(p_sdo) = file_name_length;
+	p_sdo += sizeof(file_name_length);
 	// Copy bRecursive to service transfer object
-	*reinterpret_cast<uint32_t*>(service_transfer_object + 4) = bRecursive;
+	*reinterpret_cast<uint32_t*>(p_sdo) = bRecursive;
+	p_sdo += 4;
 	// Copy filename to service transfer object
-	memcpy(service_transfer_object + 8, file_name, file_name_length);
+	memcpy(p_sdo, file_name, file_name_length);
 
 	uint32_t u32_del_file_idx = 0xB004 + (moduleId << 4);
 	u32_del_file_idx = (u32_del_file_idx << 16);
 
 	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_file_idx + 1 /* trigger */, 8 + file_name_length, service_transfer_object);
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_file_idx + 1 /* trigger */, 8 + (uint32_t)file_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
@@ -411,7 +415,7 @@ void ConfigurationArea::listFiles(const char folder_name[])
 	std::cout << "> List files/folder in \"" << folder_name << "\"" << std::endl;
 
 	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
-	size_t folder_name_length = strlen(folder_name);
+	uint32_t folder_name_length = (uint32_t)strlen(folder_name);
 
 	// Copy cbFilename to service transfer object
 	*reinterpret_cast<uint32_t*>(service_transfer_object) = folder_name_length;
@@ -454,7 +458,7 @@ void ConfigurationArea::listFiles(const char folder_name[])
 		std::cout << announce_folders << std::endl;
 		char* dir_offset = dir_sdo_data + dirInfo.nOffsFirstDir;
 
-		for (int i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
+		for (uint32_t i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
 			DeviceManager::TDirInfo dirInfo = *reinterpret_cast<DeviceManager::PTDirInfo>(dir_offset);
 
 			char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
@@ -469,7 +473,7 @@ void ConfigurationArea::listFiles(const char folder_name[])
 		std::cout << announce_files << std::endl;
 		char* file_offset = dir_sdo_data + dirInfo.nOffsFirstFile;
 
-		for (int i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
+		for (uint32_t i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
 			DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
 
 			char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
@@ -504,7 +508,7 @@ void ConfigurationArea::readDeviceFile(const char file_name[], std::ostream& loc
 	std::cout << "> Read file " << file_name << " from target" << std::endl;
 
 	// STO: cbFilename (4 byte), Continuation handle (4byte), cbMaxRead (4byte), Filename (char[])
-	size_t file_name_length = strlen(file_name);
+	uint32_t file_name_length = (uint32_t)strlen(file_name);
 	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + file_name_length]);
 	char* pWBuf = sdo_wBuf.get();
 
@@ -676,7 +680,7 @@ void ConfigurationArea::writeDeviceFile(const char file_name[], std::istream& da
 			0, // cbFilename
 			wrt_hdl, // Continuation handle
 			cbDataWrite, // cbData
-			(cbDataWrite < m_cbWriteMax) ? 1 : 0 // Set to 1 to indicate the last write access
+			(uint32_t)((cbDataWrite < m_cbWriteMax) ? 1 : 0) // Set to 1 to indicate the last write access
 		};
 
 		// Create buffer for the SDO object to write
