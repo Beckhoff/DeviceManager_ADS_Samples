@@ -739,7 +739,8 @@ void ConfigurationArea::mkdir(const char path[], bool bRecursive)
 int32_t ConfigurationArea::getStoStateInfo(uint32_t index)
 {
 	std::shared_ptr<char[]> buf;
-	return getStoStateInfo(index, m_cbBufMin, buf);
+	// Achtung
+	return getStoStateInfo(index, 4, buf);
 }
 
 int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::shared_ptr<char[]> &buf)
