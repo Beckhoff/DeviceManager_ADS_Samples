@@ -392,13 +392,13 @@ void ConfigurationArea::listFiles(const char folder_name[])
 	// Copy cbFilename to service transfer object
 	*reinterpret_cast<uint32_t*>(service_transfer_object) = folder_name_length;
 	// Copy folder name to service transfer object
-	memcpy(service_transfer_object + 4, folder_name, folder_name_length);
+	memcpy(service_transfer_object + sizeof(folder_name_length), folder_name, folder_name_length);
 
 	uint32_t u32_dir_idx = 0xB000 + (moduleId << 4);
 	u32_dir_idx = (u32_dir_idx << 16);
 
 	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, 8 + folder_name_length, service_transfer_object);
+	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, sizeof(folder_name_length) + folder_name_length, service_transfer_object);
 
 	if (n_err != ADSERR_NOERR) {
 		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
