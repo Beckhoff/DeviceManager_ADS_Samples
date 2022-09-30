@@ -25,7 +25,7 @@ include(FetchContent)
 FetchContent_Declare(
 	Beckhoff_ADS
 	GIT_REPOSITORY https://github.com/Beckhoff/ADS.git
-	GIT_TAG        4e480d105f0a6e20b42f7f4e4593836305317566 
+	GIT_TAG        a2fcc332684a92786a1164f5891d719d299cb2f8 # v14 
 	SOURCE_SUBDIR  AdsLib
 )
 
