@@ -8,11 +8,10 @@
 #include "BDM_ConfigurationArea.h"
 #include "BDM_DeviceArea.h"
 
-
 int main() {
 
-	//static const AmsNetId remoteNetId{ 5, 69, 55, 236, 1, 1 };
-	static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
+	static const AmsNetId remoteNetId{ 5, 69, 55, 236, 1, 1 };
+	//static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
 
 	auto adsClient = std::shared_ptr<BasicADS>(new TC1000AdsClient(remoteNetId));
 	
@@ -21,9 +20,10 @@ int main() {
 	//configArea.rebootDevice();
 	//configArea.changeIPAddress();
 	//configArea.deleteAdsRoute("CX-50C9E8");
-	
 	//configArea.deleteFile(R"(C:\test.txt)");
 	//configArea.listFiles(R"(C:\TwinCAT\3.1\Boot\*)");
+
+	
 	//configArea.listFiles(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)"); // TwinCAT/BSD
 	//configArea.mkdir(R"(C:\TwinCAT\3.1\Boot\NewFolder)", false);
 	//configArea.mkdir(R"(/usr/local/etc/TwinCAT/3.1/Boot/NewFolder)", false); // TwinCAT/BSD
@@ -43,7 +43,7 @@ int main() {
 	//const char* dest = R"(C:\TwinCAT\3.1\CurrentConfig_backup.tszip)";
 	//const char* source = R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)";
 	//const char* dest = R"(/usr/local/etc/TwinCAT/3.1/CurrentConfig_backup.tszip)";
-	//configArea.copyDeviceFile(source, dest, 3);
+	//configArea.copyDeviceFile(source, dest, 1);
 
 
 	GeneralArea genArea(adsClient.get());

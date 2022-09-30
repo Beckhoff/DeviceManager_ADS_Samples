@@ -108,12 +108,15 @@ public:
 	void copyDeviceFile(const char source[], const char dest[], uint32_t flags);
 	void mkdir(const char path[], bool bRecursive);
 
-	const uint32_t	m_large_buf		= 65536;
-	const uint32_t	m_cbWriteMax	= 1024;
-	const uint32_t	m_cbReadMax		= 1024;
+	static const uint32_t	m_large_buf		= 65536;
+	static const uint32_t	m_cbWriteMax	= 1024;
+	static const uint32_t	m_cbReadMax		= 1024;
+	static const uint32_t  m_cbBufMin		= 6;
 
 private:
 
+	//int32_t getStoStateInfo(uint32_t index, uint32_t cbBuf = m_cbBufMin, char **ppData = NULL);
+	int32_t getStoStateInfo(uint32_t index,	uint32_t cbBuf = m_cbBufMin, std::shared_ptr<char[]> &buf = std::shared_ptr<char[]>::shared_ptr());
 	template <uint16_t ModuleType> std::vector<DeviceManager::Module> get_modules();
 
 	std::vector<DeviceManager::Module> m_modules;
