@@ -1,8 +1,10 @@
 #ifndef BDM_CONFIGURATION_AREA_H
 #define BDM_CONFIGURATION_AREA_H
 
+#include <cstdint>
 #include <vector>
 #include <fstream>
+#include <memory>
 
 #include "BasicADS.h"
 
@@ -34,7 +36,7 @@ namespace DeviceManager {
 	typedef struct _tagTFileInfo
 	{
 		uint32_t	nOffsNextFile;
-		__int64		filesize;
+		int64_t		filesize;
 		uint32_t	attribs;
 		uint32_t	cchFile;
 		//char[File] szName
@@ -115,8 +117,8 @@ public:
 
 private:
 
-	//int32_t getStoStateInfo(uint32_t index, uint32_t cbBuf = m_cbBufMin, char **ppData = NULL);
-	int32_t getStoStateInfo(uint32_t index,	uint32_t cbBuf = m_cbBufMin, std::shared_ptr<char[]> &buf = std::shared_ptr<char[]>::shared_ptr());
+	int32_t getStoStateInfo(uint32_t index);
+	int32_t getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::shared_ptr<char[]> &buf);
 	template <uint16_t ModuleType> std::vector<DeviceManager::Module> get_modules();
 
 	std::vector<DeviceManager::Module> m_modules;

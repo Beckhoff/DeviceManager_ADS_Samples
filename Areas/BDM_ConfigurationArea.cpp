@@ -44,12 +44,9 @@ ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
 			break;
 		}
 
-		uint16_t u16_highWord = u32_module_entry >> 16; // ModuleType
-		uint16_t u16_lowWord = u32_module_entry & 0xFF; // ModuleId
-
 		DeviceManager::Module module = {
-			u32_module_entry >> 16, // ModuleType
-			u32_module_entry & 0xFF // ModuleId
+			static_cast<uint16_t>(u32_module_entry >> 16), // ModuleType
+			static_cast<uint16_t>(u32_module_entry & 0xFF) // ModuleId
 		};
 
 		m_modules.push_back(module);
@@ -737,6 +734,12 @@ void ConfigurationArea::mkdir(const char path[], bool bRecursive)
 	}
 	// Read state of operation
 	n_err = getStoStateInfo(u32_mkdir_idx);
+}
+
+int32_t ConfigurationArea::getStoStateInfo(uint32_t index)
+{
+	std::shared_ptr<char[]> buf;
+	return getStoStateInfo(index, m_cbBufMin, buf);
 }
 
 int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::shared_ptr<char[]> &buf)
