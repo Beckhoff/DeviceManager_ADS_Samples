@@ -3,21 +3,22 @@
 
 #include "BasicADS.h"
 
+namespace DeviceManager {
 
-class DeviceArea{
-public:
-	DeviceArea(BasicADS* adsClient);
+	class DeviceArea {
+	public:
+		DeviceArea(BasicADS* adsClient);
 
-	virtual ~DeviceArea() {};
+		virtual ~DeviceArea() {};
 
-	DeviceArea(const DeviceArea& other);
+		DeviceArea(const DeviceArea& other);
 
-	DeviceArea& operator=(const DeviceArea& other);
+		DeviceArea& operator=(const DeviceArea& other);
 
-	void readSerialNumber();
+		void getSerialNumber();
 
-private:
-	BasicADS& m_adsClient;
-};
-
+	private:
+		BasicADS& m_adsClient;
+	};
+}
 #endif

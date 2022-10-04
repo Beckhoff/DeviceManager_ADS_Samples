@@ -12,6 +12,8 @@
 	#include "AdsDef.h"
 #endif
 
+using namespace DeviceManager;
+
 GeneralArea::GeneralArea(BasicADS* adsClient)
 	: m_adsClient(*adsClient) {};
 
@@ -23,7 +25,7 @@ GeneralArea& GeneralArea::operator=(const GeneralArea& other) {
 	return *this;
 }
 
-void GeneralArea::readDeviceName() {
+void GeneralArea::getDeviceName() {
 
 	int32_t n_err = 0;
 	uint32_t strLen = 0;

@@ -15,6 +15,8 @@
 #include "AdsDef.h"
 #endif
 
+using namespace DeviceManager;
+
 ConfigurationArea::ConfigurationArea(BasicADS* adsClient)
 	: m_adsClient(*adsClient) {
 
@@ -368,7 +370,7 @@ void ConfigurationArea::deleteFile(const char file_name[], bool bRecursive)
 	}
 }
 
-void ConfigurationArea::listFiles(const char folder_name[])
+void ConfigurationArea::dir(const char folder_name[])
 {
 	assert(folder_name != NULL);
 	assert(strlen(folder_name) > 0);

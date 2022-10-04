@@ -12,6 +12,8 @@
 #include "AdsDef.h"
 #endif
 
+using namespace DeviceManager;
+
 DeviceArea::DeviceArea(BasicADS* adsClient)
 	: m_adsClient(*adsClient) {};
 
@@ -24,7 +26,7 @@ DeviceArea& DeviceArea::operator=(const DeviceArea& other) {
 }
 
 
-void DeviceArea::readSerialNumber() {
+void DeviceArea::getSerialNumber() {
 	int32_t n_err = 0;
 	uint32_t strLen = 0;
 	char s_serialNo[50];
