@@ -1,15 +1,32 @@
 cmake_minimum_required (VERSION 3.14)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSION OFF)
+
+
 if (WIN32)
     add_compile_definitions(USE_TWINCAT_ROUTER)
     link_libraries(TcAdsDll.lib)
     link_directories(BEFORE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
-endif (WIN32)
+elseif(UNIX)
 
-if (UNIX)
-    link_libraries(ads)
-endif (UNIX)
+    execute_process(
+        COMMAND sh -c "kenv loader_brand"
+        OUTPUT_VARIABLE manufacturer
+        )
+
+    if(${manufacturer} MATCHES beckhoff)
+        # Use local ADS route on TwinCAT/BSD
+        add_compile_definitions(USE_TWINCAT_ROUTER)
+        link_libraries(TcAdsDll)
+        link_directories("/usr/local/lib")
+    else()
+        # Use generic ADS on any other Unix-like system
+        link_libraries(ads)
+    endif()
+endif()
 
 link_libraries(DeviceManager)
 
@@ -29,7 +46,6 @@ add_executable(WriteFile "write_file.cpp")
 add_executable(CopyFile "copy_file.cpp")
 # Miscellaneous
 add_executable(Reboot "reboot.cpp")
-
 
 # General Area
 add_executable(GetDeviceName "get_device_name.cpp")
