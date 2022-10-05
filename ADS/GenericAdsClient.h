@@ -9,7 +9,6 @@
 #include "AdsLib.h"
 
 
-
 class GenericAdsClient : public BasicADS {
 public:
     GenericAdsClient(const AmsNetId& remoteNetId, const char* remoteIpV4)

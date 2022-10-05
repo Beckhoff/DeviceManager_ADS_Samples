@@ -20,7 +20,7 @@ target_include_directories(DeviceManager PUBLIC
 #)
 
 #add_subdirectory(Areas)
-add_subdirectory(TC1000_Examples)
+add_subdirectory(Examples)
 
 # TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
 find_package(Threads)
@@ -38,29 +38,24 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Beckhoff_ADS)
 
 if (WIN32)
-    #target_include_directories(DevMan_TC1000 PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
-    #target_link_directories(DevMan_TC1000 PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
-    #target_link_libraries(DevMan_TC1000 PUBLIC TcAdsDll.lib)
-
-    #target_include_directories(DeviceManager INTERFACE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
+    add_compile_definitions(USE_TWINCAT_ROUTER)
     target_include_directories(DeviceManager PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
     target_link_directories(DeviceManager PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
     target_link_libraries(DeviceManager PUBLIC TcAdsDll.lib)
 endif (WIN32)
 
-if (UNIX)
-    target_include_directories(DevMan_TC1000 PUBLIC "/usr/local/include")
-    target_link_directories(DevMan_TC1000 PRIVATE "/usr/local/lib")
-    target_link_libraries(DevMan_TC1000 PUBLIC TcAdsDll)
-    target_compile_definitions(DevMan_TC1000 PUBLIC POSIX)
+if (UNIX) # TwinCAT/BSD
+    
+    target_include_directories(DeviceManager PUBLIC "/usr/local/include")
+    target_link_directories(DeviceManager PRIVATE "/usr/local/lib")
+    target_compile_definitions(DeviceManager PUBLIC POSIX)
+
+    list(APPEND includePath "${PROJECT_BINARY_DIR}" "${beckhoff_ads_SOURCE_DIR}/AdsLib")
+    
+    target_include_directories(DeviceManager PUBLIC
+      "$<BUILD_INTERFACE:${includePath}>"
+    )
+    target_link_libraries(DeviceManager PUBLIC ads)
 endif (UNIX)
 
-#list(APPEND includePath "${PROJECT_BINARY_DIR}" "${beckhoff_ads_SOURCE_DIR}/AdsLib")
-
-#target_include_directories(DevMan_Generic PUBLIC
-#  "$<BUILD_INTERFACE:${includePath}>"
-#)
-
-#target_link_libraries(DevMan_Generic PUBLIC ads)
-
-#set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

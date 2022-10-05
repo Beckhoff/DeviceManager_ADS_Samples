@@ -1,6 +1,8 @@
 #ifndef TC_ADSCLIENT_H
 #define TC_ADSCLIENT_H
 
+//#ifdef ADSTC1000
+
 #if __has_include( <Windows.h> )
 #   include <Windows.h>
 #endif
@@ -47,5 +49,5 @@ private:
     AmsAddr     m_AmsAddr;
     uint32_t    m_port;
 };
-
-#endif
+//#endif // ADSTC1000
+#endif // Include guard
