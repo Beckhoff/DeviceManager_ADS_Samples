@@ -22,29 +22,30 @@ target_include_directories(DeviceManager PUBLIC
 #add_subdirectory(Areas)
 add_subdirectory(Examples)
 
-# TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
-find_package(Threads)
 
-include(FetchContent)
-
-
-FetchContent_Declare(
-	Beckhoff_ADS
-	GIT_REPOSITORY https://github.com/Beckhoff/ADS.git
-	GIT_TAG        a2fcc332684a92786a1164f5891d719d299cb2f8 # v14 
-	SOURCE_SUBDIR  AdsLib
-)
-
-FetchContent_MakeAvailable(Beckhoff_ADS)
 
 if (WIN32)
-    add_compile_definitions(USE_TWINCAT_ROUTER)
     target_include_directories(DeviceManager PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
     target_link_directories(DeviceManager PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
     target_link_libraries(DeviceManager PUBLIC TcAdsDll.lib)
 endif (WIN32)
 
 if (UNIX) # TwinCAT/BSD
+
+    # TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
+    find_package(Threads)
+
+    include(FetchContent)
+
+    FetchContent_Declare(
+	    Beckhoff_ADS
+	    GIT_REPOSITORY https://github.com/Beckhoff/ADS.git
+	    GIT_TAG        a2fcc332684a92786a1164f5891d719d299cb2f8 # v14 
+	    SOURCE_SUBDIR  AdsLib
+    )
+
+    FetchContent_MakeAvailable(Beckhoff_ADS)
+
     
     target_include_directories(DeviceManager PUBLIC "/usr/local/include")
     target_link_directories(DeviceManager PRIVATE "/usr/local/lib")

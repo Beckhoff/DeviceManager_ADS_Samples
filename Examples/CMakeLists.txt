@@ -2,6 +2,7 @@ cmake_minimum_required (VERSION 3.14)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
 if (WIN32)
+    add_compile_definitions(USE_TWINCAT_ROUTER)
     link_libraries(TcAdsDll.lib)
     link_directories(BEFORE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
 endif (WIN32)
