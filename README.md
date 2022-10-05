@@ -16,25 +16,25 @@ The following packages are required to build and run this example:
 The following examples are currently available in the [Examples](/Examples) folder:
 
 - [General Area](https://infosys.beckhoff.com/content/1031/devicemanager/262981387.html?id=4293180299832159029)
-  - GetDeviceName
+  - [GetDeviceName](/Examples/get_device_name.cpp)
 - [Device Area](https://infosys.beckhoff.com/content/1031/devicemanager/263037707.html?id=2194017811770186156)
-  - GetSerialNumber
+  - [GetSerialNumber](/Examples/get_serial_number.cpp)
 - [Configuration Area](https://infosys.beckhoff.com/content/1031/devicemanager/262982923.html?id=3581134456374512489)
   - [NIC](https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html?id=5976289690375372601)
-    - ChangeIP
+    - [ChangeIP](/Examples/change_ip.cpp)
   - [TwinCAT](https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382)
-    - DeleteAdsRoute 
+    - [DeleteAdsRoute](/Examples/delete_route.cpp)
   - [CPU](https://infosys.beckhoff.com/content/1031/devicemanager/262984459.html?id=5232713418016897865)
-    - GetCpuInfo 
+    - [GetCpuInfo](/Examples/get_cpu_info.cpp)
   - [File System Object](https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020)
-    - DeleteFile
-    - Dir
-    - Mkdir
-    - ReadFile
-    - WriteFile
-    - CopyFile
+    - [DeleteFile](/Examples/delete_file.cpp)
+    - [Dir](/Examples/dir.cpp)
+    - [Mkdir](/Examples/mkdir.cpp)
+    - [ReadFile](/Examples/read_file.cpp)
+    - [WriteFile](/Examples/write_file.cpp)
+    - [CopyFile](/Examples/copy_file.cpp)
   - [Miscellaneous](https://infosys.beckhoff.com/content/1031/devicemanager/263010571.html?id=6080561606085130)
-    - Reboot
+    - [Reboot](/Examples/reboot.cpp)
 
 Follow these instructions in order to build and run examples:
 
