@@ -7,6 +7,7 @@
 #   include <Windows.h>
 #endif
 
+#include <cstddef>
 #include <cstdint>
 #include "TcAdsDef.h"
 #include "TcAdsAPI.h"
