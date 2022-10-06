@@ -4,7 +4,8 @@
 	#include "GenericAdsClient.h"
 #endif
 
-#include "BDM_ConfigurationArea.h"
+#include "cpu.h"
+#include <iostream>
 
 int main() {
 
@@ -17,6 +18,11 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 	
-	DeviceManager::ConfigurationArea configArea(adsClient.get());
-	configArea.readCPU();
+	DeviceManager::CPU cpu(adsClient.get());
+
+	if (!cpu) {
+		std::cerr << "Module not found on target" << std::endl;
+		return -1;
+	}
+	cpu.readCPU();
 }

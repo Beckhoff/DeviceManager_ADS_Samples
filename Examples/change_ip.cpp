@@ -4,7 +4,8 @@
 	#include "GenericAdsClient.h"
 #endif
 
-#include "BDM_ConfigurationArea.h"
+#include "nic.h"
+#include <iostream>
 
 int main() {
 
@@ -17,6 +18,12 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::ConfigurationArea configArea(adsClient.get());
-	configArea.changeIPAddress();
+	DeviceManager::NIC nic(adsClient.get());
+
+	if (!nic) {
+		std::cerr << "Module not found on target" << std::endl;
+		return -1;
+	}
+
+	nic.changeIPAddress();
 }

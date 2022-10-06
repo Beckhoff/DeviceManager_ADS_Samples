@@ -4,7 +4,8 @@
 	#include "GenericAdsClient.h"
 #endif
 
-#include "BDM_ConfigurationArea.h"
+#include "file_system_object.h"
+#include <iostream>
 
 int main() {
 
@@ -17,6 +18,12 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::ConfigurationArea configArea(adsClient.get());
-	configArea.deleteFile(R"(/usr/local/etc/TwinCAT/3.1/Boot/test.txt)");
+	DeviceManager::FileSystemObject fso(adsClient.get());
+
+	if (!fso) {
+		std::cerr << "Module not found on target" << std::endl;
+		return -1;
+	}
+
+	fso.deleteFile(R"(/usr/local/etc/TwinCAT/3.1/Boot/test.txt)");
 }

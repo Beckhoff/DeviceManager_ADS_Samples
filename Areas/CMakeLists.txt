@@ -3,4 +3,9 @@ target_sources(DeviceManager
         BDM_ConfigurationArea.cpp
         BDM_GeneralArea.cpp
         BDM_DeviceArea.cpp
+        file_system_object.cpp
+        cpu.cpp
+        nic.cpp
+        twincat.cpp
+        miscellaneous.cpp
 )
