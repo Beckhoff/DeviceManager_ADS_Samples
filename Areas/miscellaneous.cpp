@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <iostream> // if ndebug
+#include <cstring>
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
