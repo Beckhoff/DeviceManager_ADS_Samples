@@ -48,23 +48,12 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 			break;
 		}
 
-		// Onsolete
 		DeviceManager::Module module = {
 			static_cast<uint16_t>(u32_module_entry >> 16), // ModuleType
 			static_cast<uint16_t>(u32_module_entry & 0xFF) // ModuleId
 		};
 
 		m_modules.push_back(module);
-
-
-		//uint16_t moduleId	= static_cast<uint16_t>(u32_module_entry & 0xFF);
-		//uint16_t moduleType = static_cast<uint16_t>(u32_module_entry >> 16);
-
-		//switch (moduleType) {
-		//case MODULETYPE_FSO:
-		//	//fso = std::unique_ptr<FileSystemObject>(new FileSystemObject(m_adsClient, moduleId));
-		//	break;
-		//}
 	}
 };
 
@@ -107,7 +96,6 @@ uint16_t DeviceManager::ConfigurationArea::getFirstModuleId(uint16_t moduleType)
 int32_t ConfigurationArea::getStoStateInfo(uint32_t index)
 {
 	std::shared_ptr<char[]> buf;
-	// Achtung
 	return getStoStateInfo(index, 4, buf);
 }
 
