@@ -19,7 +19,7 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::TwinCAT twincat(adsClient.get());
+	DeviceManager::TwinCAT twincat(*adsClient);
 
 	if (!twincat) {
 		std::cerr << "Module not found on target" << std::endl;

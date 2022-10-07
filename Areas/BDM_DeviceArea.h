@@ -7,7 +7,7 @@ namespace DeviceManager {
 
 	class DeviceArea {
 	public:
-		DeviceArea(BasicADS* adsClient);
+		DeviceArea(BasicADS& adsClient);
 
 		virtual ~DeviceArea() {};
 

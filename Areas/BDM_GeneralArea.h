@@ -7,7 +7,7 @@ namespace DeviceManager {
 
 	class GeneralArea {
 	public:
-		GeneralArea(BasicADS* adsClient);
+		GeneralArea(BasicADS& adsClient);
 
 		virtual ~GeneralArea() {};
 

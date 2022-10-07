@@ -14,8 +14,8 @@
 
 using namespace DeviceManager;
 
-DeviceArea::DeviceArea(BasicADS* adsClient)
-	: m_adsClient(*adsClient) {};
+DeviceArea::DeviceArea(BasicADS& adsClient)
+	: m_adsClient(adsClient) {};
 
 DeviceArea::DeviceArea(const DeviceArea& other)
 	: m_adsClient(other.m_adsClient) {};

@@ -82,7 +82,7 @@ namespace DeviceManager {
 
 	class FileSystemObject : public ConfigurationArea {
 	public:
-		FileSystemObject(BasicADS* adsClient);
+		FileSystemObject(BasicADS& adsClient);
 
 		virtual ~FileSystemObject() {};
 

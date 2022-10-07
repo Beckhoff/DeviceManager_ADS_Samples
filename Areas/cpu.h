@@ -11,7 +11,7 @@ namespace DeviceManager {
 
 	class CPU : public ConfigurationArea {
 	public:
-		CPU(BasicADS* adsClient);
+		CPU(BasicADS& adsClient);
 
 		virtual ~CPU() {};
 

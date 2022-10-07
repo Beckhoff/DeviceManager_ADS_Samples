@@ -11,7 +11,7 @@ namespace DeviceManager {
 
 	class NIC : public ConfigurationArea {
 	public:
-		NIC(BasicADS* adsClient);
+		NIC(BasicADS& adsClient);
 
 		virtual ~NIC() {};
 

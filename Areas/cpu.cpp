@@ -13,8 +13,8 @@
 
 using namespace DeviceManager;
 
-CPU::CPU(BasicADS* adsClient)
-	: ConfigurationArea(*adsClient)
+CPU::CPU(BasicADS& adsClient)
+	: ConfigurationArea(adsClient)
 	, m_moduleId(-1)
 {
 	// Search if module type is present on the target

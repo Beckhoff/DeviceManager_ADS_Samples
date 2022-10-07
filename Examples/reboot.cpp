@@ -19,7 +19,7 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::Miscellaneous misc(adsClient.get());
+	DeviceManager::Miscellaneous misc(*adsClient);
 
 	if (!misc) {
 		std::cerr << "Module not found on target" << std::endl;

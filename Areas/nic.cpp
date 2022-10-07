@@ -13,8 +13,8 @@
 
 using namespace DeviceManager;
 
-NIC::NIC(BasicADS* adsClient)
-	: ConfigurationArea(*adsClient)
+NIC::NIC(BasicADS& adsClient)
+	: ConfigurationArea(adsClient)
 	, m_moduleId(-1)
 {
 	// Search if module type is present on the target

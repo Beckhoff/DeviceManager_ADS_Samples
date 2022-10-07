@@ -11,7 +11,7 @@ namespace DeviceManager {
 
 	class Miscellaneous : public ConfigurationArea {
 	public:
-		Miscellaneous(BasicADS* adsClient);
+		Miscellaneous(BasicADS& adsClient);
 
 		virtual ~Miscellaneous() {};
 

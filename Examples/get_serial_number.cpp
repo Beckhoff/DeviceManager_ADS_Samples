@@ -18,6 +18,6 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::DeviceArea devArea(adsClient.get());
+	DeviceManager::DeviceArea devArea(*adsClient);
 	devArea.getSerialNumber();
 }

@@ -11,7 +11,7 @@ namespace DeviceManager {
 
 	class TwinCAT : public ConfigurationArea {
 	public:
-		TwinCAT(BasicADS* adsClient);
+		TwinCAT(BasicADS& adsClient);
 
 		virtual ~TwinCAT() {};
 
