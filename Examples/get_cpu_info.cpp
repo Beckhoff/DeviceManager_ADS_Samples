@@ -24,5 +24,16 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-	cpu.readCPU();
+
+	uint32_t frequency = 0;
+	cpu.getFrequency(frequency);
+	std::cout << ">>> CPU frequency: " << frequency << "MHz" << std::endl;
+
+	uint16_t usage = 0;
+	cpu.getUsage(usage);
+	std::cout << ">>> CPU usage: " << usage << "%" << std::endl;
+
+	int16_t temperature = 0;
+	cpu.getTemp(temperature);
+	std::cout << ">>> CPU temperature: " << temperature << " C" << std::endl;
 }
