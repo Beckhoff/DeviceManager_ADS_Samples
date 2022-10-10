@@ -56,9 +56,9 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 };
 
 ConfigurationArea::ConfigurationArea(const ConfigurationArea& other)
-	: m_adsClient(other.m_adsClient)
-	, m_bModuleExists(other.m_bModuleExists)
-	, m_modules(other.m_modules) {};
+    : m_modules(other.m_modules)
+    , m_adsClient(other.m_adsClient)
+    , m_bModuleExists(other.m_bModuleExists){};
 
 ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){
 	m_adsClient	= other.m_adsClient;
