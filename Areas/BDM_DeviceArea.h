@@ -2,6 +2,7 @@
 #define BDM_DEVICE_AREA_H
 
 #include "BasicADS.h"
+#include <string>
 
 namespace DeviceManager {
 
@@ -15,7 +16,9 @@ namespace DeviceManager {
 
 		DeviceArea& operator=(const DeviceArea& other);
 
-		void getSerialNumber();
+		int32_t getSerialNumber(std::string &serialNo);
+
+		static const uint32_t	m_stringBuf = 128;
 
 	private:
 		BasicADS& m_adsClient;
