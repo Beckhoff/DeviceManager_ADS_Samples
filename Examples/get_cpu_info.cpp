@@ -26,20 +26,20 @@ int main() {
 		return -1;
 	}
 
-	int32_t n_err = 0;
+	int32_t error = 0;
 
 	uint32_t frequency = 0;
-	n_err = cpu.getFrequency(frequency);
-	handleResult(n_err);
+	error = cpu.getFrequency(frequency);
+	handleError(error);
 	std::cout << ">>> CPU frequency: " << frequency << "MHz" << std::endl;
 
 	uint16_t usage = 0;
-	n_err = cpu.getUsage(usage);
-	handleResult(n_err);
+	error = cpu.getUsage(usage);
+	handleError(error);
 	std::cout << ">>> CPU usage: " << usage << "%" << std::endl;
 
 	int16_t temperature = 0;
-	n_err = cpu.getTemp(temperature);
-	handleResult(n_err);
+	error = cpu.getTemp(temperature);
+	handleError(error);
 	std::cout << ">>> CPU temperature: " << temperature << " C" << std::endl;
 }

@@ -36,14 +36,12 @@ FileSystemObject& FileSystemObject::operator=(const FileSystemObject& other) {
 
 
 
-void FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
+int32_t FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 {
 	assert(file_name != NULL);
 	assert(strlen(file_name) > 0);
 
-	std::cout << "> Delete file/folder \"" << file_name << "\"" << std::endl;
-
-	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
+	char service_transfer_object[m_stringBuf] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
 	char* p_sdo = service_transfer_object;
 
 	uint32_t file_name_length = (uint32_t)strlen(file_name);
@@ -60,54 +58,44 @@ void FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 	uint32_t u32_del_file_idx = 0xB004 + (m_moduleId << 4);
 	u32_del_file_idx = (u32_del_file_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_file_idx + 1 /* trigger */, 8 + (uint32_t)file_name_length, service_transfer_object);
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_file_idx + 1 /* trigger */, 8 + (uint32_t)file_name_length, service_transfer_object);
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	// Read state of operation
-
-	n_err = getStoStateInfo(u32_del_file_idx);
-	if (n_err != ADSERR_NOERR) {
-		exit(-1);
-	}
+	error = getStoStateInfo(u32_del_file_idx);
+	return error;
 }
 
-void FileSystemObject::dir(const char folder_name[])
+int32_t FileSystemObject::dir(const char folder_name[])
 {
 	assert(folder_name != NULL);
 	assert(strlen(folder_name) > 0);
 
-	std::cout << "> List files/folder in \"" << folder_name << "\"" << std::endl;
+	uint32_t cbsRootDir = (uint32_t)strlen(folder_name);
 
-	char service_transfer_object[50] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
-	uint32_t folder_name_length = (uint32_t)strlen(folder_name);
-
-	// Copy cbFilename to service transfer object
-	*reinterpret_cast<uint32_t*>(service_transfer_object) = folder_name_length;
+	// cbsRootDir (4 byte), sRootDir
+	std::shared_ptr<char[]> sdo_wBuf = std::shared_ptr<char[]>(new char[4 + (size_t)cbsRootDir]);
+	char* pWBuf = sdo_wBuf.get();
+	*reinterpret_cast<uint32_t*>(pWBuf) = cbsRootDir;
+	pWBuf += 4; // Advance pointer, cbsRootDir (4 byte)
 	// Copy folder name to service transfer object
-	memcpy(service_transfer_object + sizeof(folder_name_length), folder_name, folder_name_length);
+	memcpy(pWBuf, folder_name, cbsRootDir);
 
 	uint32_t u32_dir_idx = 0xB000 + (m_moduleId << 4);
 	u32_dir_idx = (u32_dir_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, sizeof(folder_name_length) + folder_name_length, service_transfer_object);
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, sizeof(cbsRootDir) + cbsRootDir, sdo_wBuf.get());
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	// Read state and data of operation
 	std::shared_ptr<char[]> buffer;
-	n_err = getStoStateInfo(u32_dir_idx, m_large_buf, buffer);
+	error = getStoStateInfo(u32_dir_idx, m_large_buf, buffer);
 
-	if (n_err != ADSERR_NOERR) {
-		exit(-1);
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	char* dir_sdo_data = buffer.get();
 
@@ -142,22 +130,21 @@ void FileSystemObject::dir(const char folder_name[])
 
 		file_offset = dir_sdo_data + fileInfo.nOffsNextFile; // Move forward to next TFileInfo
 	}
+	return error;
 }
 
-void FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file)
+int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file)
 {
 	assert(file_name != NULL);
 	assert(strlen(file_name) > 0);
 
-	std::cout << "> Read file " << file_name << " from target" << std::endl;
-
 	// STO: cbFilename (4 byte), Continuation handle (4byte), cbMaxRead (4byte), Filename (char[])
-	uint32_t file_name_length = (uint32_t)strlen(file_name);
-	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + file_name_length]);
+	uint32_t cbFilename = (uint32_t)strlen(file_name);
+	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + (size_t)cbFilename]);
 	char* pWBuf = sdo_wBuf.get();
 
 	DeviceManager::TReadFileIn write_info = {
-		file_name_length, // cbFileName
+		cbFilename, // cbFileName
 		0, // Continuation handle
 		m_cbReadMax
 	};
@@ -166,30 +153,25 @@ void FileSystemObject::readDeviceFile(const char file_name[], std::ostream& loca
 	*reinterpret_cast<DeviceManager::PTReadFileIn>(pWBuf) = write_info;
 	// Copy file name to service transfer object
 	pWBuf += sizeof(write_info);
-	memcpy(pWBuf, file_name, file_name_length);
+	memcpy(pWBuf, file_name, cbFilename);
 
 	uint32_t u32_rd_idx = 0xB001 + (m_moduleId << 4);
 	u32_rd_idx = (u32_rd_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_rd_idx + 1 /* trigger */, 12 + file_name_length, sdo_wBuf.get());
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_rd_idx + 1 /* trigger */, sizeof(write_info) + cbFilename, sdo_wBuf.get());
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	bool bComplete = false;
-	bool bErr = false;
 
-	while (!bComplete && !bErr) {
+	while (!bComplete) {
 
 		std::shared_ptr<char[]> sdo_rBuf;
-		n_err = getStoStateInfo(u32_rd_idx, m_cbReadMax, sdo_rBuf);
+		error = getStoStateInfo(u32_rd_idx, m_cbReadMax, sdo_rBuf);
 
-		if (n_err != ADSERR_NOERR) {
-			bErr = true;
-		}
+		if (error != ADSERR_NOERR) return error;
+
 		char* rd_sdo_data = sdo_rBuf.get();
 
 		DeviceManager::TReadFileOut read_info = *reinterpret_cast<DeviceManager::PTReadFileOut>(rd_sdo_data);
@@ -206,41 +188,36 @@ void FileSystemObject::readDeviceFile(const char file_name[], std::ostream& loca
 				m_cbReadMax
 			};
 
-			n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_rd_idx + 1 /* trigger */, sizeof(sdo_rd_in), &sdo_rd_in);
+			error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_rd_idx + 1 /* trigger */, sizeof(sdo_rd_in), &sdo_rd_in);
 
-			if (n_err != ADSERR_NOERR) {
-				bErr = true;
-				std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-				exit(-1);
-			}
+			if (error != ADSERR_NOERR) return error;
 		}
 	}
+	return error;
 }
 
-void FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data)
+int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data)
 {
-	assert(file_name != NULL);
+	assert(file_name != nullptr);
 	assert(strlen(file_name) > 0);
-
-	std::cout << "> Write file " << file_name << " to target" << std::endl;
 
 	// Calcualte size of data:
 	data.seekg(0, data.end);
 	uint32_t data_length = (uint32_t)data.tellg();
 	data.seekg(0, data.beg);
 
-	uint32_t file_name_length = (uint32_t)strlen(file_name);
+	uint32_t cbFilename = (uint32_t)strlen(file_name);
 
 	// Request write handle first
 	DeviceManager::TWriteFileIn write_info = {
-		file_name_length, // cbFilename
+		cbFilename, // cbFilename
 		0, // Continuation handle
 		0, // cbData
 		0 // bWriteCompleted
 	};
 
 	// Create buffer for the SDO object to write
-	uint32_t cbWrite = sizeof(write_info) + file_name_length;// +cbDataWrite;
+	uint32_t cbWrite = sizeof(write_info) + cbFilename;// +cbDataWrite;
 	auto sdo_wBuf = std::shared_ptr<char[]>(new char[cbWrite]);
 	char* pWBuf = sdo_wBuf.get();
 
@@ -248,24 +225,23 @@ void FileSystemObject::writeDeviceFile(const char file_name[], std::istream& dat
 	*reinterpret_cast<DeviceManager::PTWriteFileIn>(pWBuf) = write_info;
 	// Copy file name to service transfer object
 	pWBuf += sizeof(write_info);
-	memcpy(pWBuf, file_name, file_name_length);
+	memcpy(pWBuf, file_name, cbFilename);
 
 
 	uint32_t u32_wrt_idx = 0xB002 + (m_moduleId << 4);
 	u32_wrt_idx = (u32_wrt_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	// Read write-handle and state of operation (MDP status (1byte), padding (1byte), Continuation handle (4 byte))
 	std::shared_ptr<char[]> buf_hdl;
-	n_err = getStoStateInfo(u32_wrt_idx, 6, buf_hdl);
-	
+	error = getStoStateInfo(u32_wrt_idx, 6, buf_hdl);
+
+	if (error != ADSERR_NOERR) return error;
+
 	uint32_t wrt_hdl = 0;
 	wrt_hdl = *reinterpret_cast<uint32_t*>(buf_hdl.get());
 
@@ -296,28 +272,22 @@ void FileSystemObject::writeDeviceFile(const char file_name[], std::istream& dat
 		// Copy data to SDO
 		data.read(pWBuf, cbDataWrite);
 
-		n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+		error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_wrt_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
 
-		if (n_err != ADSERR_NOERR) {
-			std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-			exit(-1);
-		}
+		if (error != ADSERR_NOERR) return error;
 
 		// Read state of operation
-		n_err = getStoStateInfo(u32_wrt_idx);
+		error = getStoStateInfo(u32_wrt_idx);
 		
-		if (n_err != ADSERR_NOERR) {
-			exit(-1); // Some error occurred
-		}
+		if (error != ADSERR_NOERR) return error;
 	}
+	return error;
 }
 
-void FileSystemObject::copyDeviceFile(const char source[], const char dest[], uint32_t flags)
+int32_t FileSystemObject::copyDeviceFile(const char source[], const char dest[], uint32_t flags)
 {
 	assert(source != NULL && dest !=NULL);
 	assert((strlen(source) > 0) && (strlen(dest) > 0));
-
-	std::cout << "> Copy file " << source << " to " << dest << std::endl;
 
 	uint32_t cb_source	= (uint32_t)strlen(source);
 	uint32_t cb_dest	= (uint32_t)strlen(dest);
@@ -342,24 +312,20 @@ void FileSystemObject::copyDeviceFile(const char source[], const char dest[], ui
 	uint32_t u32_cpy_idx = 0xB003 + (m_moduleId << 4);
 	u32_cpy_idx = (u32_cpy_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_cpy_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_cpy_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-	// Read state of operation
-	n_err = getStoStateInfo(u32_cpy_idx);
+	if (error != ADSERR_NOERR) return error;
+	// Read state of operation and return
+	return getStoStateInfo(u32_cpy_idx);
 }
 
-void FileSystemObject::mkdir(const char path[], bool bRecursive)
+int32_t FileSystemObject::mkdir(const char path[], bool bRecursive)
 {
 	assert(path != NULL);
 	assert((strlen(path) > 0));
 
 	uint32_t cb_path = (uint32_t)strlen(path);
-	std::cout << "> Create new folder: " << path << std::endl;
 
 	DeviceManager::TMkdirIn mkdirInfo = {
 		cb_path,
@@ -376,13 +342,10 @@ void FileSystemObject::mkdir(const char path[], bool bRecursive)
 	uint32_t u32_mkdir_idx = 0xB005 + (m_moduleId << 4);
 	u32_mkdir_idx = (u32_mkdir_idx << 16);
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_mkdir_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_mkdir_idx + 1 /* trigger */, cbWrite, sdo_wBuf.get());
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-	// Read state of operation
-	n_err = getStoStateInfo(u32_mkdir_idx);
+	if (error != ADSERR_NOERR) return error;
+	// Read state of operation and return
+	return getStoStateInfo(u32_mkdir_idx);
 }

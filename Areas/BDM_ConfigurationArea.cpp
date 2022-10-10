@@ -30,11 +30,9 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
 
 	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
+		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl; // TODO Throw exception
 		exit(-1);
 	}
-
-	std::cout << "Number of MDP modules available on target: " << u16_len_module_id_list << std::endl;
 
 	// Download table of module IDs (Configuration Area)
 	for (int i = 1; i < u16_len_module_id_list; ++i) {
@@ -59,6 +57,7 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 
 ConfigurationArea::ConfigurationArea(const ConfigurationArea& other)
 	: m_adsClient(other.m_adsClient)
+	, m_bModuleExists(other.m_bModuleExists)
 	, m_modules(other.m_modules) {};
 
 ConfigurationArea& ConfigurationArea::operator=(const ConfigurationArea& other){

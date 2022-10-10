@@ -5,6 +5,7 @@
 #endif
 
 #include "file_system_object.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -28,7 +29,10 @@ int main() {
 
 	const char* source = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
 	const char* dest = R"(C:\TwinCAT\3.1\CurrentConfig_backup.tszip)";
+
+	std::cout << "> Copy file from " << source << " to " << dest << std::endl;
 	//const char* source = R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)";
 	//const char* dest = R"(/usr/local/etc/TwinCAT/3.1/CurrentConfig_backup.tszip)";
-	fso.copyDeviceFile(source, dest, 1);
+	int32_t error = fso.copyDeviceFile(source, dest, 1);
+	handleError(error);
 }

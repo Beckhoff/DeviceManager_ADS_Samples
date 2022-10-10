@@ -5,6 +5,7 @@
 #endif
 
 #include "file_system_object.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,7 +26,9 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-
-	//fso.dir(R"(C:\TwinCAT\3.1\Boot\*)");
-	fso.dir(R"(/usr/local/etc/TwinCAT/3.1/Boot/*)");
+	const char* folderName = R"(/usr/local/etc/TwinCAT/3.1/Boot/*)";
+	//const char* folderName = R"(C:\TwinCAT\3.1\Boot\*)";
+	std::cout << "> List files/folder in \"" << folderName << "\"" << std::endl;
+	int32_t error = fso.dir(folderName);
+	handleError(error);
 }

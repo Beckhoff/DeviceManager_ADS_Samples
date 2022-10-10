@@ -5,6 +5,7 @@
 #endif
 
 #include "file_system_object.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,7 +26,12 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-	std::ofstream current_config(R"(CurrentConfig.tszip)", std::ios::binary);
-	fso.readDeviceFile(R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)", current_config);
-	//fso.readDeviceFile(R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)", current_config);
+	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
+	std::cout << "> Read file " << targetFile << " from target" << std::endl;
+
+	const char* localFile = R"(CurrentConfig.tszip)";
+	std::ofstream current_config(localFile, std::ios::binary);
+
+	int32_t error = fso.readDeviceFile(targetFile, current_config);
+	handleError(error);
 }

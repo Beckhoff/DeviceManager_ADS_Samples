@@ -11,7 +11,7 @@
 #include <iostream>
 #endif
 
-void handleResult(int32_t result) {
+void handleError(int32_t result) {
 	if (result != ADSERR_NOERR) {
 #ifndef NDEBUG
 		std::cerr << "Error occurred: 0x" << std::hex << result << std::endl;

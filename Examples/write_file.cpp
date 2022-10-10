@@ -5,6 +5,7 @@
 #endif
 
 #include "file_system_object.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,9 +26,13 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
+	
+	const char* sourceFile = R"(C:\TwinCAT\3.1\Target\StaticRoutes.xml)";
+	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\TestRoutes.xml)";
 
-	const char* source_file = R"(C:\TwinCAT\3.1\Target\StaticRoutes.xml)";
-	const char* target_file = R"(C:\TwinCAT\3.1\Boot\TestRoutes.xml)";
-	std::ifstream tmc_file(source_file, std::ios::binary);
-	fso.writeDeviceFile(target_file, tmc_file);
+	std::cout << "> Write " << sourceFile << " to " << targetFile << " on target" << std::endl;
+
+	std::ifstream tmc_file(sourceFile, std::ios::binary);
+	int32_t error = fso.writeDeviceFile(targetFile, tmc_file);
+	handleError(error);
 }

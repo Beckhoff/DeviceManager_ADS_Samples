@@ -5,6 +5,7 @@
 #endif
 
 #include "file_system_object.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -24,6 +25,8 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-
-	fso.deleteFile(R"(/usr/local/etc/TwinCAT/3.1/Boot/test.txt)");
+	const char* fileName = R"(/usr/local/etc/TwinCAT/3.1/Boot/test.txt)";
+	std::cout << "> Delete file/folder \"" << fileName << "\"" << std::endl;
+	int32_t error = fso.deleteFile(fileName);
+	handleError(error);
 }

@@ -90,18 +90,17 @@ namespace DeviceManager {
 
 		FileSystemObject& operator=(const FileSystemObject& other);
 
-		
-
-		void deleteFile(const char file_name[], bool bRecursive = false);
-		void dir(const char folder_name[]);
-		void readDeviceFile(const char file_name[], std::ostream& local_file);
-		void writeDeviceFile(const char file_name[], std::istream& data);
-		void copyDeviceFile(const char source[], const char dest[], uint32_t flags);
-		void mkdir(const char path[], bool bRecursive);
+		int32_t deleteFile(const char file_name[], bool bRecursive = false);
+		int32_t dir(const char folder_name[]);
+		int32_t readDeviceFile(const char file_name[], std::ostream& local_file);
+		int32_t writeDeviceFile(const char file_name[], std::istream& data);
+		int32_t copyDeviceFile(const char source[], const char dest[], uint32_t flags);
+		int32_t mkdir(const char path[], bool bRecursive);
 
 		static const uint32_t	m_large_buf = 65536;
 		static const uint32_t	m_cbWriteMax = 1024;
 		static const uint32_t	m_cbReadMax = 1024;
+		static const uint32_t	m_stringBuf = 128;
 		static const uint16_t	m_moduleType = MODULETYPE_FSO;
 
 		int16_t m_moduleId;
