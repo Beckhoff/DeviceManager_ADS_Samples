@@ -48,7 +48,6 @@ int32_t Miscellaneous::rebootDevice() {
 int32_t Miscellaneous::readStateSecurityWizard() {
 	std::cout << "> Read state of the SecurityWizard:" << std::endl;
 
-	int32_t n_err = 0;
 	uint32_t n_bytesRead = 0;
 
 	// Read the state of the Security Wizard
@@ -58,11 +57,6 @@ int32_t Miscellaneous::readStateSecurityWizard() {
 	u32_secWizard = (u32_secWizard << 16) + 4; // 4 == Subindex for Security Wizard
 
 	unsigned char bSecWizardState = 0;
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_secWizard, sizeof(bSecWizardState), &bSecWizardState, &n_bytesRead);
-
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-	std::cout << ">>> Security Wizard: " << std::boolalpha << static_cast<bool>(bSecWizardState) << std::endl;
+	return m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_secWizard, sizeof(bSecWizardState), &bSecWizardState, &n_bytesRead); // TODO: Beispiel machen
+	//std::cout << ">>> Security Wizard: " << std::boolalpha << static_cast<bool>(bSecWizardState) << std::endl;
 }
