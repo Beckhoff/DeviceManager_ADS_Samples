@@ -3,11 +3,7 @@
 #include "BasicADS.h"
 
 #include <iostream>
-#include <cstddef>
-#include <cstring>
-#include <cstdint>
 #include <algorithm>
-#include <assert.h>
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
@@ -100,7 +96,7 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index)
 
 int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::shared_ptr<char[]> &buf)
 {
-	uint32_t result = 0;
+    uint32_t error = 0;
 	uint32_t n_bytes_read = 0;
 	// Increase cbBuf +2 to for MDP status and padding
 	cbBuf += 2;
@@ -109,14 +105,9 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::
 
 	buf = std::shared_ptr<char[]>(new char[cbBuf]);
 
-	result = m_adsClient.AdsReadReq(MDP_IDX_GRP, index + 3 /* state & data */, cbBuf, buf.get(), &n_bytes_read);
+    error = m_adsClient.AdsReadReq(MDP_IDX_GRP, index + 3 /* state & data */, cbBuf, buf.get(), &n_bytes_read);
 
-	if (result != ADSERR_NOERR) {
-		#ifndef NDEBUG
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << result << std::endl;
-		#endif
-		return result;
-	}
+    if (error != ADSERR_NOERR) return error;
 
 	uint8_t mdp_status = *reinterpret_cast<uint8_t*>(buf.get());
 
@@ -129,18 +120,12 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::
 		buf = std::shared_ptr<char[]>(buf, (char*)(buf.get() + 2));
 		break;
 	case 2:
-		result = 0xECA60001; // Unspecified error
-#ifndef NDEBUG
-		std::cerr << ">>> MDP error: 0x" << std::hex << result << std::endl;
-#endif
+        error = 0xECA60001; // Unspecified error
 		break;
 	case 3:
-		result = *reinterpret_cast<uint32_t*>(buf.get() + 2);
-#ifndef NDEBUG
-		std::cerr << ">>> MDP error: 0x" << std::hex << result << std::endl;
-#endif
+        error = *reinterpret_cast<uint32_t*>(buf.get() + 2);
 		break;
 	}
 
-	return result;
+    return error;
 }
