@@ -5,6 +5,7 @@
 #endif
 
 #include "twincat.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,5 +26,8 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-	twincat.deleteAdsRoute("CX-50C9E8");
+	const char* routeName = R"(CX-50C9E8)";
+	std::cout << "> Delete ADS Route \"" << routeName << "\"" << std::endl;
+	int32_t error = twincat.deleteAdsRoute(routeName);
+	handleError(error);
 }

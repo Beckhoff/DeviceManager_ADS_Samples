@@ -19,7 +19,7 @@ namespace DeviceManager {
 
 		TwinCAT& operator=(const TwinCAT& other);
 
-		void deleteAdsRoute(const char route_name[]);
+		int32_t deleteAdsRoute(const char route_name[]);
 
 		static const uint16_t m_moduleType = MODULETYPE_TWINCAT;
 		int16_t m_moduleId;

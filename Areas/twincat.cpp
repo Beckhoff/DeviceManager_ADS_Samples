@@ -34,11 +34,9 @@ TwinCAT& TwinCAT::operator=(const TwinCAT& other) {
 	return *this;
 }
 
-void TwinCAT::deleteAdsRoute(const char route_name[]) {
+int32_t TwinCAT::deleteAdsRoute(const char route_name[]) {
 	assert(route_name != NULL);
 	assert(strlen(route_name) > 0);
-
-	std::cout << "> Delete ADS Route \"" << route_name << "\"" << std::endl;
 
 	// Deleting ADS Route
 
@@ -53,13 +51,5 @@ void TwinCAT::deleteAdsRoute(const char route_name[]) {
 	uint32_t u32_del_ads_route_idx = 0xB001 + (m_moduleId << 4);
 	u32_del_ads_route_idx = (u32_del_ads_route_idx << 16) + 1; // Subindex "Write Data"
 
-	int32_t n_err = 0;
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
-
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncWriteReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-
-	std::cout << ">>> Route deleteded successful" << std::endl;
+	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 }
