@@ -34,8 +34,6 @@ FileSystemObject& FileSystemObject::operator=(const FileSystemObject& other) {
 	return *this;
 }
 
-
-
 int32_t FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 {
 	assert(file_name != NULL);
