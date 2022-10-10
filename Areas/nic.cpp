@@ -21,7 +21,7 @@ NIC::NIC(BasicADS& adsClient)
 	// Search if module type is present on the target
 	// If so, assign module Id
 	m_moduleId = getFirstModuleId(m_moduleType);
-	m_bModuleExists = (m_moduleId > 1) ? true : false;
+	m_bModuleExists = (m_moduleId > -1) ? true : false;
 };
 
 NIC::NIC(const NIC& other)
@@ -34,10 +34,9 @@ NIC& NIC::operator=(const NIC& other) {
 	return *this;
 }
 
-void NIC::changeIPAddress() {
-	std::cout << "> Changing IP-Address..." << std::endl;
+int32_t NIC::changeIPAddress() {
 
-	int32_t n_err = 0;
+	int32_t error = 0;
 	uint32_t strLen = 0;
 
 	uint32_t u32_NIC_properties = 0;
@@ -45,39 +44,30 @@ void NIC::changeIPAddress() {
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
 
 	char s_ipAddr[50] = {};
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	if (error != ADSERR_NOERR) return error;
 
 	s_ipAddr[strLen] = 0;
 
 	std::cout << ">>> Current IP-Address:: " << s_ipAddr << std::endl;
 
-
 	// Change IP-Address of first NIC
-
 
 	std::cout << ">>> Performing address change..." << std::endl;
 
 	char new_address[] = "192.168.3.106";
 
 	// Write new address
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, (uint32_t)strlen(new_address), new_address);
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, (uint32_t)strlen(new_address), new_address);
+	if (error != ADSERR_NOERR) return error;
 
 	// Read new address again
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+	if (error != ADSERR_NOERR) return error;
+
 	s_ipAddr[strLen] = 0;
 
 	std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
+	return error;
 }

@@ -19,8 +19,8 @@ namespace DeviceManager {
 
 		Miscellaneous& operator=(const Miscellaneous& other);
 
-		void rebootDevice();
-		void readStateSecurityWizard();
+		int32_t rebootDevice();
+		int32_t readStateSecurityWizard();
 
 		static const uint16_t m_moduleType = MODULETYPE_MISC;
 		int16_t m_moduleId;

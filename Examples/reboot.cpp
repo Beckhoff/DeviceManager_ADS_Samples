@@ -5,6 +5,7 @@
 #endif
 
 #include "miscellaneous.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,5 +26,8 @@ int main() {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
-	misc.rebootDevice();
+	std::cout << "> Request reboot" << std::endl;
+	int32_t error =	misc.rebootDevice();
+	handleError(error);
+	std::cout << ">>> Reboot Requested" << std::endl;
 }

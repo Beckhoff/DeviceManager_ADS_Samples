@@ -5,11 +5,13 @@
 #endif
 
 #include "nic.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
 
-	static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
+	//static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
+	static const AmsNetId remoteNetId{ 5, 69, 55, 236, 1, 1 };
 
 #if defined(USE_TWINCAT_ROUTER)
 	auto adsClient = std::shared_ptr<BasicADS>(new TC1000AdsClient(remoteNetId));
@@ -25,5 +27,8 @@ int main() {
 		return -1;
 	}
 
-	nic.changeIPAddress();
+	std::cout << "> Changing IP-Address..." << std::endl;
+	int32_t error = 0;
+	error = nic.changeIPAddress();
+	handleError(error);
 }

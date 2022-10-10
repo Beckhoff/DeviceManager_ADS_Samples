@@ -17,7 +17,7 @@ CPU::CPU(BasicADS& adsClient)
 	// Search if module type is present on the target
 	// If so, assign module Id
 	m_moduleId = getFirstModuleId(m_moduleType);
-	m_bModuleExists = (m_moduleId > 1) ? true : false;
+	m_bModuleExists = (m_moduleId > -1) ? true : false;
 };
 
 CPU::CPU(const CPU& other)

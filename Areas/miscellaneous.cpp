@@ -21,7 +21,7 @@ Miscellaneous::Miscellaneous(BasicADS& adsClient)
 	// Search if module type is present on the target
 	// If so, assign module Id
 	m_moduleId = getFirstModuleId(m_moduleType);
-	m_bModuleExists = (m_moduleId > 1) ? true : false;
+	m_bModuleExists = (m_moduleId > -1) ? true : false;
 };
 
 Miscellaneous::Miscellaneous(const Miscellaneous& other)
@@ -34,30 +34,18 @@ Miscellaneous& Miscellaneous::operator=(const Miscellaneous& other) {
 	return *this;
 }
 
-void Miscellaneous::rebootDevice() {
-	std::cout << "> Request reboot" << std::endl;
-
-	int32_t n_err = 0;
+int32_t Miscellaneous::rebootDevice() {
 	uint32_t n_bytesRead = 0;
-
-
-	// Reboot the device
 
 	uint32_t u32_reboot = 0;
 	u32_reboot = 0xB001 + (m_moduleId << 4);
 	u32_reboot = (u32_reboot << 16) + 1; // SubIndex = 1 as described in https://infosys.beckhoff.com/content/1033/devicemanager/263036171.html
 	unsigned char dummy = 0;
 
-	n_err = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_reboot, sizeof(dummy), &dummy);
-
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-	std::cout << ">>> Reboot Requested" << std::endl;
+	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_reboot, sizeof(dummy), &dummy);	
 }
 
-void Miscellaneous::readStateSecurityWizard() {
+int32_t Miscellaneous::readStateSecurityWizard() {
 	std::cout << "> Read state of the SecurityWizard:" << std::endl;
 
 	int32_t n_err = 0;

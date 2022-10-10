@@ -19,7 +19,7 @@ namespace DeviceManager {
 
 		NIC& operator=(const NIC& other);
 
-		void changeIPAddress();
+		int32_t changeIPAddress();
 
 		static const uint16_t m_moduleType = MODULETYPE_NIC;
 		int16_t m_moduleId;
