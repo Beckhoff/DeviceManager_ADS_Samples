@@ -1,12 +1,12 @@
 #ifndef BDM_CONFIGURATION_AREA_H
 #define BDM_CONFIGURATION_AREA_H
 
+#include "BasicADS.h"
+
 #include <cstdint>
 #include <vector>
 #include <fstream>
 #include <memory>
-
-#include "BasicADS.h"
 
 namespace DeviceManager {
 

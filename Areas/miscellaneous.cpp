@@ -2,10 +2,6 @@
 #include "Mdp.h"
 #include "BasicADS.h"
 
-#include <assert.h>
-#include <iostream> // if ndebug
-#include <cstring>
-
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
 #else
@@ -44,7 +40,7 @@ int32_t Miscellaneous::rebootDevice() {
 }
 
 int32_t Miscellaneous::readStateSecurityWizard() {
-	std::cout << "> Read state of the SecurityWizard:" << std::endl;
+    //std::cout << "> Read state of the SecurityWizard:" << std::endl;
 
 	uint32_t n_bytesRead = 0;
 

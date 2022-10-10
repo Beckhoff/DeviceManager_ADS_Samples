@@ -2,15 +2,14 @@
 #include "Mdp.h"
 #include "BasicADS.h"
 
-#include <cstddef>
-#include <cstdint>
-#include <memory>
-
 #if defined _WIN32 || defined __FreeBSD__
 	#include "TcAdsDef.h"
 #else
 	#include "AdsDef.h"
 #endif
+
+#include <memory>
+
 
 using namespace DeviceManager;
 
