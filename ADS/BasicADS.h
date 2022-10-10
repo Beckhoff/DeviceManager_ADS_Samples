@@ -9,7 +9,6 @@
  * diffrent variants of AdsClients
  */
 
-
 class BasicADS {
 public:
     virtual ~BasicADS(){};

@@ -5,6 +5,7 @@
 #endif
 
 #include "cpu.h"
+#include "ads_error.h"
 #include <iostream>
 
 int main() {
@@ -25,15 +26,20 @@ int main() {
 		return -1;
 	}
 
+	int32_t n_err = 0;
+
 	uint32_t frequency = 0;
-	cpu.getFrequency(frequency);
+	n_err = cpu.getFrequency(frequency);
+	handleResult(n_err);
 	std::cout << ">>> CPU frequency: " << frequency << "MHz" << std::endl;
 
 	uint16_t usage = 0;
-	cpu.getUsage(usage);
+	n_err = cpu.getUsage(usage);
+	handleResult(n_err);
 	std::cout << ">>> CPU usage: " << usage << "%" << std::endl;
 
 	int16_t temperature = 0;
-	cpu.getTemp(temperature);
+	n_err = cpu.getTemp(temperature);
+	handleResult(n_err);
 	std::cout << ">>> CPU temperature: " << temperature << " C" << std::endl;
 }

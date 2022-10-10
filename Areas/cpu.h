@@ -19,9 +19,9 @@ namespace DeviceManager {
 
 		CPU& operator=(const CPU& other);
 
-		void getFrequency(uint32_t& freq);
-		void getUsage(uint16_t& usage);
-		void getTemp(int16_t& temp);
+		int32_t getFrequency(uint32_t& freq);
+		int32_t getUsage(uint16_t& usage);
+		int32_t getTemp(int16_t& temp);
 
 		static const uint16_t m_moduleType = MODULETYPE_CPU;
 		int16_t m_moduleId;
