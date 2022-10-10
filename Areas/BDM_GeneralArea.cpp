@@ -2,9 +2,9 @@
 #include "Mdp.h"
 #include "BasicADS.h"
 
-#include <iostream>
 #include <cstddef>
 #include <cstdint>
+#include <memory>
 
 #if defined _WIN32 || defined __FreeBSD__
 	#include "TcAdsDef.h"
@@ -25,18 +25,18 @@ GeneralArea& GeneralArea::operator=(const GeneralArea& other) {
 	return *this;
 }
 
-void GeneralArea::getDeviceName() {
+int16_t GeneralArea::getDeviceName(std::string& deviceName) {
 
-	int32_t n_err = 0;
+	int32_t error = 0;
 	uint32_t strLen = 0;
-	char s_deviceName[50];
 
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_NAME, sizeof(s_deviceName), s_deviceName, &strLen);
+	auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
+	
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_NAME, m_cbStringBuf, sBuf.get(), &strLen);
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-		exit(-1);
-	}
-	s_deviceName[strLen] = 0; // End String
-	std::cout << "Device Name: " << s_deviceName << std::endl;
+	if (error != ADSERR_NOERR) return error;
+
+	sBuf[strLen] = 0; // End String
+	deviceName = sBuf.get();
+	return error;
 }

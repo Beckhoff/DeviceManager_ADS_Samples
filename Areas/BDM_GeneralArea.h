@@ -2,6 +2,7 @@
 #define BDM_GENERAL_AREA_H
 
 #include "BasicADS.h"
+#include <string>
 
 namespace DeviceManager {
 
@@ -15,7 +16,9 @@ namespace DeviceManager {
 
 		GeneralArea& operator=(const GeneralArea& other);
 
-		void getDeviceName();
+		int16_t getDeviceName(std::string &deviceName);
+
+		static const uint32_t	m_cbStringBuf = 128;
 
 	private:
 		BasicADS& m_adsClient;

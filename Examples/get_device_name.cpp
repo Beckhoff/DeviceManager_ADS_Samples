@@ -5,7 +5,9 @@
 #endif
 
 #include "BDM_GeneralArea.h"
+#include "ads_error.h"
 #include <memory>
+#include <string>
 
 int main() {
 
@@ -19,5 +21,9 @@ int main() {
 #endif
 
 	DeviceManager::GeneralArea genArea(*adsClient);
-	genArea.getDeviceName();
+
+	std::string deviceName;
+	int16_t error = genArea.getDeviceName(deviceName);
+	handleError(error);
+	std::cout << "Device Name: " << deviceName << std::endl;
 }
