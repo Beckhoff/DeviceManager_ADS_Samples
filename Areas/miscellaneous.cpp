@@ -35,8 +35,6 @@ Miscellaneous& Miscellaneous::operator=(const Miscellaneous& other) {
 }
 
 int32_t Miscellaneous::rebootDevice() {
-	uint32_t n_bytesRead = 0;
-
 	uint32_t u32_reboot = 0;
 	u32_reboot = 0xB001 + (m_moduleId << 4);
 	u32_reboot = (u32_reboot << 16) + 1; // SubIndex = 1 as described in https://infosys.beckhoff.com/content/1033/devicemanager/263036171.html
