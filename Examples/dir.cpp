@@ -7,6 +7,8 @@
 #include "file_system_object.h"
 #include "ads_error.h"
 #include <iostream>
+#include <vector>
+#include <string>
 
 int main() {
 
@@ -27,8 +29,18 @@ int main() {
 		return -1;
 	}
 	const char* folderName = R"(/usr/local/etc/TwinCAT/3.1/Boot/*)";
+	std::vector<std::string> folders;
+	std::vector<std::string> files;
 	//const char* folderName = R"(C:\TwinCAT\3.1\Boot\*)";
 	std::cout << "> List files/folder in \"" << folderName << "\"" << std::endl;
-	int32_t error = fso.dir(folderName);
+	int32_t error = fso.dir(folderName, folders, files);
 	handleError(error);
+
+	for (auto const& folder : folders) {
+		std::cout << folder << "/" << std::endl;
+	}
+
+	for (auto const& file : files) {
+		std::cout << file << std::endl;
+	}
 }

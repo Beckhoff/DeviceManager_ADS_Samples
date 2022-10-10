@@ -9,7 +9,6 @@
 #endif
 
 #include <assert.h>
-#include <iostream> // if ndebug
 #include <cstring>
 
 using namespace DeviceManager;
@@ -66,7 +65,7 @@ int32_t FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 	return error;
 }
 
-int32_t FileSystemObject::dir(const char folder_name[])
+int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>& folders, std::vector<std::string>& files)
 {
 	assert(folder_name != NULL);
 	assert(strlen(folder_name) > 0);
@@ -100,8 +99,6 @@ int32_t FileSystemObject::dir(const char folder_name[])
 	DeviceManager::TDir dirInfo = *reinterpret_cast<DeviceManager::PTDir>(dir_sdo_data);
 
 	// Iterate over directories
-	const char* announce_folders = (dirInfo.cDirs > 0) ? ">> Directories :" : " >> No directories found";
-	std::cout << announce_folders << std::endl;
 	char* dir_offset = dir_sdo_data + dirInfo.nOffsFirstDir;
 
 	for (uint32_t i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
@@ -109,14 +106,12 @@ int32_t FileSystemObject::dir(const char folder_name[])
 
 		char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
 		std::string sDirName(pDirName, dirInfo.cchName);
-		std::cout << ">>> " << sDirName << "/" << std::endl;
+		folders.push_back(sDirName);
 
 		dir_offset = dir_sdo_data + dirInfo.nOffsNextDir; // Move forward to next TDirInfo
 	}
 
 	// Iterate over files
-	const char* announce_files = (dirInfo.cFiles > 0) ? ">> Files :" : " >> No files found";
-	std::cout << announce_files << std::endl;
 	char* file_offset = dir_sdo_data + dirInfo.nOffsFirstFile;
 
 	for (uint32_t i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
@@ -124,7 +119,7 @@ int32_t FileSystemObject::dir(const char folder_name[])
 
 		char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
 		std::string sFileName(pFileName, fileInfo.cchFile);
-		std::cout << ">>> " << sFileName << " [size: " << fileInfo.filesize << " byte]" << std::endl;
+		files.push_back(sFileName);
 
 		file_offset = dir_sdo_data + fileInfo.nOffsNextFile; // Move forward to next TFileInfo
 	}
