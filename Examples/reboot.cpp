@@ -33,9 +33,10 @@ int main() {
 	}
 
 	if (!misc) {
-		std::cerr << "Module not found on target" << std::endl;
+		std::cerr << "Module not available on target" << std::endl;
 		return -1;
 	}
+
 	std::cout << "> Request reboot" << std::endl;
 	int32_t error =	misc->rebootDevice();
 	handleError(error);

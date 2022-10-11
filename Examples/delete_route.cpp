@@ -33,7 +33,7 @@ int main() {
 	}
 
 	if (!twincat) {
-		std::cerr << "Module not found on target" << std::endl;
+		std::cerr << "Module not available on target" << std::endl;
 		return -1;
 	}
 	const char* routeName = R"(CX-50C9E8)";

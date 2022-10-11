@@ -32,6 +32,11 @@ int main() {
 		exit(-1);
 	}
 
+	if (!nic) {
+		std::cerr << "Module not available on target" << std::endl;
+		return -1;
+	}
+
 	std::cout << "> Changing IP-Address..." << std::endl;
 	int32_t error = 0;
 	error = nic->changeIPAddress();

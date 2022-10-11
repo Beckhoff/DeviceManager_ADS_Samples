@@ -32,6 +32,11 @@ int main() {
 		exit(-1);
 	}
 	
+	if (!fso) {
+		std::cerr << "Module not available on target" << std::endl;
+		return -1;
+	}
+
 	const char* sourceFile = R"(C:\TwinCAT\3.1\Target\StaticRoutes.xml)";
 	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\TestRoutes.xml)";
 

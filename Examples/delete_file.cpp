@@ -31,6 +31,11 @@ int main() {
 		exit(-1);
 	}
 
+	if (!fso) {
+		std::cerr << "Module not available on target" << std::endl;
+		return -1;
+	}
+
 	const char* fileName = R"(/usr/local/etc/TwinCAT/3.1/Boot/test.txt)";
 	std::cout << "> Delete file/folder \"" << fileName << "\"" << std::endl;
 	int32_t error = fso->deleteFile(fileName);

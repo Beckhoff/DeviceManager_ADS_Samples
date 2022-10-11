@@ -32,7 +32,7 @@ int main() {
 	}
 
 	if (!cpu) {
-		std::cerr << "Module not found on target" << std::endl;
+		std::cerr << "Module not available on target" << std::endl;
 		return -1;
 	}
 

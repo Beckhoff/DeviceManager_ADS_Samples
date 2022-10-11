@@ -33,12 +33,12 @@ int main() {
 		std::cout << ex.what() << std::endl;
 		exit(-1);
 	}
-	
 
 	if (!fso) {
-		std::cerr << "Module not found on target" << std::endl;
+		std::cerr << "Module not available on target" << std::endl;
 		return -1;
 	}
+
 	const char* folderName = R"(/usr/local/etc/TwinCAT/3.1/Boot/*)";
 	std::vector<std::string> folders;
 	std::vector<std::string> files;

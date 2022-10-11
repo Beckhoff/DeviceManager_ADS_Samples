@@ -32,6 +32,11 @@ int main() {
 		exit(-1);
 	}
 
+	if (!fso) {
+		std::cerr << "Module not available on target" << std::endl;
+		return -1;
+	}
+
 	const char* source = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
 	const char* dest = R"(C:\TwinCAT\3.1\CurrentConfig_backup.tszip)";
 

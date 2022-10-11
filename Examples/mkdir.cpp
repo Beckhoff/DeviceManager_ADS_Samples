@@ -32,6 +32,11 @@ int main() {
 		exit(-1);
 	}
 
+	if (!fso) {
+		std::cerr << "Module not available on target" << std::endl;
+		return -1;
+	}
+
 	const char* folderName = R"(C:\TwinCAT\3.1\Boot\NewFolder)";
 	//const char* folderName = R"(/usr/local/etc/TwinCAT/3.1/Boot/NewFolder)";
 	std::cout << "> Create new folder: " << folderName << std::endl;
