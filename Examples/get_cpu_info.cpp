@@ -6,7 +6,9 @@
 
 #include "cpu.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -19,7 +21,15 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 	
-	DeviceManager::CPU cpu(*adsClient);
+	std::optional<DeviceManager::CPU> cpu;
+
+	try {
+		cpu.emplace(*adsClient);
+	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
+	}
 
 	if (!cpu) {
 		std::cerr << "Module not found on target" << std::endl;
@@ -29,17 +39,17 @@ int main() {
 	int32_t error = 0;
 
 	uint32_t frequency = 0;
-	error = cpu.getFrequency(frequency);
+	error = cpu->getFrequency(frequency);
 	handleError(error);
 	std::cout << ">>> CPU frequency: " << frequency << "MHz" << std::endl;
 
 	uint16_t usage = 0;
-	error = cpu.getUsage(usage);
+	error = cpu->getUsage(usage);
 	handleError(error);
 	std::cout << ">>> CPU usage: " << usage << "%" << std::endl;
 
 	int16_t temperature = 0;
-	error = cpu.getTemp(temperature);
+	error = cpu->getTemp(temperature);
 	handleError(error);
 	std::cout << ">>> CPU temperature: " << temperature << " C" << std::endl;
 }

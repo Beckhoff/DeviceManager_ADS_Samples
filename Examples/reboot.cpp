@@ -6,7 +6,9 @@
 
 #include "miscellaneous.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,14 +22,22 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::Miscellaneous misc(*adsClient);
+	std::optional<DeviceManager::Miscellaneous> misc;
+
+	try {
+		misc.emplace(*adsClient);
+	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
+	}
 
 	if (!misc) {
 		std::cerr << "Module not found on target" << std::endl;
 		return -1;
 	}
 	std::cout << "> Request reboot" << std::endl;
-	int32_t error =	misc.rebootDevice();
+	int32_t error =	misc->rebootDevice();
 	handleError(error);
 	std::cout << ">>> Reboot Requested" << std::endl;
 }

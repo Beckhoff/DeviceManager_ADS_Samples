@@ -6,7 +6,9 @@
 
 #include "file_system_object.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,16 +22,20 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::FileSystemObject fso(*adsClient);
+	std::optional<DeviceManager::FileSystemObject> fso;
 
-	if (!fso) {
-		std::cerr << "Module not found on target" << std::endl;
-		return -1;
+	try {
+		fso.emplace(*adsClient);
 	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
+	}
+
 	const char* folderName = R"(C:\TwinCAT\3.1\Boot\NewFolder)";
 	//const char* folderName = R"(/usr/local/etc/TwinCAT/3.1/Boot/NewFolder)";
 	std::cout << "> Create new folder: " << folderName << std::endl;
 
-	int32_t error = fso.mkdir(folderName, false);
+	int32_t error = fso->mkdir(folderName, false);
 	handleError(error);
 }

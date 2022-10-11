@@ -6,7 +6,9 @@
 
 #include "file_system_object.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,18 +22,22 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::FileSystemObject fso(*adsClient);
+	std::optional<DeviceManager::FileSystemObject> fso;
 
-	if (!fso) {
-		std::cerr << "Module not found on target" << std::endl;
-		return -1;
+	try {
+		fso.emplace(*adsClient);
 	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
+	}
+
 	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
 	std::cout << "> Read file " << targetFile << " from target" << std::endl;
 
 	const char* localFile = R"(CurrentConfig.tszip)";
 	std::ofstream current_config(localFile, std::ios::binary);
 
-	int32_t error = fso.readDeviceFile(targetFile, current_config);
+	int32_t error = fso->readDeviceFile(targetFile, current_config);
 	handleError(error);
 }

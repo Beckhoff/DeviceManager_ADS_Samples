@@ -6,7 +6,9 @@
 
 #include "twincat.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,7 +22,15 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::TwinCAT twincat(*adsClient);
+	std::optional<DeviceManager::TwinCAT> twincat;
+
+	try {
+		twincat.emplace(*adsClient);
+	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
+	}
 
 	if (!twincat) {
 		std::cerr << "Module not found on target" << std::endl;
@@ -28,6 +38,6 @@ int main() {
 	}
 	const char* routeName = R"(CX-50C9E8)";
 	std::cout << "> Delete ADS Route \"" << routeName << "\"" << std::endl;
-	int32_t error = twincat.deleteAdsRoute(routeName);
+	int32_t error = twincat->deleteAdsRoute(routeName);
 	handleError(error);
 }

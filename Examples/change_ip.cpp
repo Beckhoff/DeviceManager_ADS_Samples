@@ -6,7 +6,9 @@
 
 #include "nic.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,15 +22,18 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::NIC nic(*adsClient);
+	std::optional<DeviceManager::NIC> nic;
 
-	if (!nic) {
-		std::cerr << "Module not found on target" << std::endl;
-		return -1;
+	try {
+		nic.emplace(*adsClient);
+	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
 	}
 
 	std::cout << "> Changing IP-Address..." << std::endl;
 	int32_t error = 0;
-	error = nic.changeIPAddress();
+	error = nic->changeIPAddress();
 	handleError(error);
 }

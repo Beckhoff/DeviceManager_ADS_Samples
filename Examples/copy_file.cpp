@@ -6,7 +6,9 @@
 
 #include "file_system_object.h"
 #include "ads_error.h"
+#include "AdsException.h"
 #include <iostream>
+#include <optional>
 
 int main() {
 
@@ -20,11 +22,14 @@ int main() {
 	auto adsClient = std::shared_ptr<BasicADS>(new GenericAdsClient(remoteNetId, remoteIpV4));
 #endif
 
-	DeviceManager::FileSystemObject fso(*adsClient);
+	std::optional<DeviceManager::FileSystemObject> fso;
 
-	if (!fso) {
-		std::cerr << "Module not found on target" << std::endl;
-		return -1;
+	try {
+		fso.emplace(*adsClient);
+	}
+	catch (const DeviceManager::AdsException& ex) {
+		std::cout << ex.what() << std::endl;
+		exit(-1);
 	}
 
 	const char* source = R"(C:\TwinCAT\3.1\Boot\CurrentConfig.tszip)";
@@ -33,6 +38,6 @@ int main() {
 	std::cout << "> Copy file from " << source << " to " << dest << std::endl;
 	//const char* source = R"(/usr/local/etc/TwinCAT/3.1/Boot/CurrentConfig.tszip)";
 	//const char* dest = R"(/usr/local/etc/TwinCAT/3.1/CurrentConfig_backup.tszip)";
-	int32_t error = fso.copyDeviceFile(source, dest, 1);
+	int32_t error = fso->copyDeviceFile(source, dest, 1);
 	handleError(error);
 }

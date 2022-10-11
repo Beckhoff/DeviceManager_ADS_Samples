@@ -11,6 +11,9 @@
 #include <iostream>
 #endif
 
+#include <stdexcept>
+#include <string>
+
 void handleError(int32_t result) {
 	if (result != ADSERR_NOERR) {
 #ifndef NDEBUG

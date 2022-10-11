@@ -1,6 +1,7 @@
 #include "BDM_ConfigurationArea.h"
 #include "Mdp.h"
 #include "BasicADS.h"
+#include "AdsException.h"
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
@@ -18,16 +19,15 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 	, m_bModuleExists(false)
 	{
 
-	int32_t n_err = 0;
+	int32_t error = 0;
 	uint32_t n_bytesRead = 0;
 
 	// Read length of list of module IDs https://infosys.beckhoff.com/content/1031/devicemanager/45035996536742667.html?id=5503267175110745821
 	uint16_t u16_len_module_id_list = 0;
-	n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, MDP_IDX_OFFS_DEVICE_AREA, sizeof(u16_len_module_id_list), &u16_len_module_id_list, &n_bytesRead);
 
-	if (n_err != ADSERR_NOERR) {
-		std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl; // TODO Throw exception
-		exit(-1);
+	if (error != ADSERR_NOERR) {
+		throw AdsException(error);
 	}
 
 	// Download table of module IDs (Configuration Area)
@@ -35,11 +35,10 @@ ConfigurationArea::ConfigurationArea(BasicADS& adsClient)
 
 		uint32_t  u32_module_entry = 0;
 		uint32_t indexOffset = MDP_IDX_OFFS_DEVICE_AREA + i;
-		n_err = m_adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
+		error = m_adsClient.AdsReadReq(MDP_IDX_GRP, indexOffset, sizeof(u32_module_entry), &u32_module_entry, &n_bytesRead);
 
-		if (n_err != ADSERR_NOERR) {
-			std::cerr << "Error AdsSyncReadReq: 0x" << std::hex << n_err << std::endl;
-			break;
+		if (error != ADSERR_NOERR) {
+			throw AdsException(error);
 		}
 
 		DeviceManager::Module module = {
