@@ -8,7 +8,7 @@
 #include "AdsDef.h"
 #endif
 
-#include <iostream> // if ndebug
+#include <memory>
 #include <cstring>
 
 using namespace DeviceManager;
@@ -17,24 +17,51 @@ NIC::NIC(BasicADS& adsClient)
 	: ConfigurationArea(adsClient)
 	, m_moduleId(-1)
 {
-	// Search if module type is present on the target
-	// If so, assign module Id
 	m_moduleId = getFirstModuleId(m_moduleType);
-	m_bModuleExists = (m_moduleId > -1) ? true : false;
+	m_moduleIds = getModuleIds(m_moduleType);
+	m_bModuleExists = (m_moduleIds.empty()) ? false : true;
 };
 
 NIC::NIC(const NIC& other)
 	: ConfigurationArea(other.m_adsClient)
+	, m_moduleIds(other.m_moduleIds)
 	, m_moduleId(other.m_moduleId) {};
 
 NIC& NIC::operator=(const NIC& other) {
 	m_adsClient = other.m_adsClient;
+	m_moduleIds = other.m_moduleIds;
 	m_moduleId = other.m_moduleId;
 	return *this;
 }
 
-int32_t NIC::changeIPAddress() {
+NIC& DeviceManager::NIC::operator[](int idx)
+{
+	m_moduleId = m_moduleIds[idx];
+	return *this;
+}
 
+int32_t DeviceManager::NIC::getIPv4Address(std::string& IPv4)
+{
+	int32_t error = 0;
+	uint32_t strLen = 0;
+
+	auto sBuf = std::shared_ptr<char[]>(new char[m_stringBuf]);
+
+	uint32_t u32_NIC_properties = 0;
+	u32_NIC_properties = 0x8001 + (m_moduleId << 4);
+	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
+
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, m_stringBuf, sBuf.get(), &strLen);
+
+	if (error != ADSERR_NOERR) return error;
+
+	sBuf[strLen] = 0; // End String
+	IPv4 = sBuf.get();
+	return error;
+}
+
+int32_t DeviceManager::NIC::setIPv4Address(const char IPv4[])
+{
 	int32_t error = 0;
 	uint32_t strLen = 0;
 
@@ -42,31 +69,10 @@ int32_t NIC::changeIPAddress() {
 	u32_NIC_properties = 0x8001 + (m_moduleId << 4);
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
 
-	char s_ipAddr[50] = {};
-	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
+	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, (uint32_t)strlen(IPv4), const_cast<char*>(IPv4));
+}
 
-	if (error != ADSERR_NOERR) return error;
-
-	s_ipAddr[strLen] = 0;
-
-	std::cout << ">>> Current IP-Address:: " << s_ipAddr << std::endl;
-
-	// Change IP-Address of first NIC
-
-	std::cout << ">>> Performing address change..." << std::endl;
-
-	char new_address[] = "192.168.3.106";
-
-	// Write new address
-	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_NIC_properties, (uint32_t)strlen(new_address), new_address);
-	if (error != ADSERR_NOERR) return error;
-
-	// Read new address again
-	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, sizeof(s_ipAddr), s_ipAddr, &strLen);
-	if (error != ADSERR_NOERR) return error;
-
-	s_ipAddr[strLen] = 0;
-
-	std::cout << ">>> New IP-Address:: " << s_ipAddr << std::endl;
-	return error;
+uint32_t DeviceManager::NIC::count()
+{
+	return m_moduleIds.size();
 }

@@ -37,8 +37,24 @@ int main() {
 		return -1;
 	}
 
-	std::cout << "> Changing IP-Address..." << std::endl;
+	uint32_t nNICs = nic->count();
+	std::cout << nNICs << " NICs available on target" << std::endl;
+
 	int32_t error = 0;
-	error = nic->changeIPAddress();
-	handleError(error);
+
+	for (uint32_t i = 0; i < nic->count(); i++) {
+		std::string sIpv4Addr;
+		error = (*nic)[i].getIPv4Address(sIpv4Addr);
+		handleError(error);
+
+		std::cout << "Interface_" << i << " - " << sIpv4Addr << std::endl;
+
+		// Change address
+		if (sIpv4Addr == "192.168.3.102") {
+			const char* newAddr = "192.168.3.103";
+			std::cout << ">>> Change " << sIpv4Addr << " to " << newAddr << std::endl;
+			error = (*nic)[i].setIPv4Address(newAddr);
+			handleError(error);
+		}
+	}
 }

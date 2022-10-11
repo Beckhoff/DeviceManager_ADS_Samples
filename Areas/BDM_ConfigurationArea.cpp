@@ -65,15 +65,6 @@ bool ConfigurationArea::operator!() const {
 	return !m_bModuleExists;
 }
 
-template<uint16_t ModuleType>
-inline std::vector<DeviceManager::Module> ConfigurationArea::get_modules()
-{
-	std::vector<DeviceManager::Module> modules;
-	auto test_module = [](const DeviceManager::Module& m) { return m.ModuleType == ModuleType; };
-	std::copy_if(m_modules.begin(), m_modules.end(), std::back_inserter(modules), test_module);
-	return modules;
-}
-
 uint16_t DeviceManager::ConfigurationArea::getFirstModuleId(uint16_t moduleType)
 {
 
@@ -127,4 +118,16 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::
 	}
 
     return error;
+}
+
+std::vector<uint16_t> DeviceManager::ConfigurationArea::getModuleIds(uint16_t moduleType)
+{
+	std::vector<uint16_t> modules;
+
+	for (auto const &mod : m_modules) {
+		if (mod.ModuleType == moduleType) {
+			modules.push_back(mod.ModuleId);
+		}
+	}
+	return modules;
 }

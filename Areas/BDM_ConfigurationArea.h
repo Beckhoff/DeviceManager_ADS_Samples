@@ -37,7 +37,10 @@ namespace DeviceManager {
 		int32_t		getStoStateInfo(uint32_t index);
 		int32_t		getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::shared_ptr<char[]> &buf);
 		uint16_t	getFirstModuleId(uint16_t moduleType);
-		template <uint16_t ModuleType> std::vector<DeviceManager::Module> get_modules();
+
+		std::vector<uint16_t> getModuleIds(uint16_t moduleType);
+		//template <uint16_t ModuleType> std::vector<uint16_t> getModuleIds();
+		//template <uint16_t ModuleType> std::vector<DeviceManager::Module> get_modules();
 
 		std::vector<DeviceManager::Module> m_modules;
 
