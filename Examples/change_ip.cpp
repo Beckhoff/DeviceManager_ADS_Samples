@@ -6,7 +6,7 @@
 
 #include "nic.h"
 #include "ads_error.h"
-#include "AdsException.h"
+#include "ads_exception.h"
 #include <iostream>
 #include <optional>
 
@@ -27,7 +27,7 @@ int main() {
 	try {
 		nic.emplace(*adsClient);
 	}
-	catch (const DeviceManager::AdsException& ex) {
+    catch (const DeviceManager::AdsException &ex) {
 		std::cout << ex.what() << std::endl;
 		exit(-1);
 	}

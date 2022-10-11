@@ -6,7 +6,7 @@
 
 #include "miscellaneous.h"
 #include "ads_error.h"
-#include "AdsException.h"
+#include "ads_exception.h"
 #include <iostream>
 #include <optional>
 

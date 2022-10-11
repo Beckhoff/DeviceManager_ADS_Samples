@@ -1,7 +1,7 @@
 #include "BDM_ConfigurationArea.h"
 #include "Mdp.h"
 #include "BasicADS.h"
-#include "AdsException.h"
+#include "ads_exception.h"
 
 #if defined _WIN32 || defined __FreeBSD__
 #include "TcAdsDef.h"
