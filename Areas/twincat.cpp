@@ -52,3 +52,27 @@ int32_t TwinCAT::deleteAdsRoute(const char route_name[]) {
 
 	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 }
+
+int32_t TwinCAT::getTcMajor(uint16_t& major) {
+	uint32_t u32_tc_major_idx = 0x8001 + (m_moduleId << 4);
+	u32_tc_major_idx = (u32_tc_major_idx << 16) + 1; // Subindex "Major version"
+
+	uint32_t n_bytesRead = 0;
+	return m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_tc_major_idx, sizeof(major), &major, &n_bytesRead);
+}
+
+int32_t TwinCAT::getTcMinor(uint16_t& minor) {
+	uint32_t u32_tc_minor_idx = 0x8001 + (m_moduleId << 4);
+	u32_tc_minor_idx = (u32_tc_minor_idx << 16) + 2; // Subindex "Minor version"
+
+	uint32_t n_bytesRead = 0;
+	return m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_tc_minor_idx, sizeof(minor), &minor, &n_bytesRead);
+}
+
+int32_t TwinCAT::getTcBuild(uint16_t& build) {
+	uint32_t u32_tc_build_idx = 0x8001 + (m_moduleId << 4);
+	u32_tc_build_idx = (u32_tc_build_idx << 16) + 3; // Subindex "Build version"
+
+	uint32_t n_bytesRead = 0;
+	return m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_tc_build_idx, sizeof(build), &build, &n_bytesRead);
+}

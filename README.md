@@ -24,6 +24,7 @@ The following examples are currently available in the [Examples](/Examples) fold
     - [ChangeIP](/Examples/change_ip.cpp)
   - [TwinCAT](https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382)
     - [DeleteAdsRoute](/Examples/delete_route.cpp)
+    - [GetTcVersion](/Examples/get_tc_version.cpp)
   - [CPU](https://infosys.beckhoff.com/content/1031/devicemanager/262984459.html?id=5232713418016897865)
     - [GetCpuInfo](/Examples/get_cpu_info.cpp)
   - [File System Object](https://infosys.beckhoff.com/content/1031/devicemanager/263000843.html?id=5965980679203448020)

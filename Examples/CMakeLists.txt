@@ -35,6 +35,7 @@ link_libraries(DeviceManager)
 add_executable(ChangeIP "change_ip.cpp")
 # TwinCAT
 add_executable(DeleteAdsRoute "delete_route.cpp")
+add_executable(GetTcVersion "get_tc_version.cpp")
 # CPU
 add_executable(GetCpuInfo "get_cpu_info.cpp")
 # File System Object
