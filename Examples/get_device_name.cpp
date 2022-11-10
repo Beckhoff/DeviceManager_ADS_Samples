@@ -24,7 +24,7 @@ int main() {
 	DeviceManager::GeneralArea genArea(*adsClient);
 
 	std::string deviceName;
-	int16_t error = genArea.getDeviceName(deviceName);
+	int32_t error = genArea.getDeviceName(deviceName);
 	handleError(error);
 	std::cout << "Device Name: " << deviceName << std::endl;
 }

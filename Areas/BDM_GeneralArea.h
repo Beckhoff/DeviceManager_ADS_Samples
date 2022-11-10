@@ -16,7 +16,7 @@ namespace DeviceManager {
 
 		GeneralArea& operator=(const GeneralArea& other);
 
-		int16_t getDeviceName(std::string &deviceName);
+		int32_t getDeviceName(std::string &deviceName);
 
 		static const uint32_t	m_cbStringBuf = 128;
 

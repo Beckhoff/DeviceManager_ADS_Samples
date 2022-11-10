@@ -24,7 +24,7 @@ GeneralArea& GeneralArea::operator=(const GeneralArea& other) {
 	return *this;
 }
 
-int16_t GeneralArea::getDeviceName(std::string& deviceName) {
+int32_t GeneralArea::getDeviceName(std::string& deviceName) {
 
 	int32_t error = 0;
 	uint32_t strLen = 0;
