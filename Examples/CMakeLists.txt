@@ -45,6 +45,8 @@ add_executable(Mkdir "mkdir.cpp")
 add_executable(ReadFile "read_file.cpp")
 add_executable(WriteFile "write_file.cpp")
 add_executable(CopyFile "copy_file.cpp")
+# Mainboard
+add_executable(GetMainboardInfo "get_mainboard_info.cpp")
 # Miscellaneous
 add_executable(Reboot "reboot.cpp")
 

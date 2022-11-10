@@ -8,4 +8,5 @@ target_sources(DeviceManager
         nic.cpp
         twincat.cpp
         miscellaneous.cpp
+        mainboard.cpp
 )
