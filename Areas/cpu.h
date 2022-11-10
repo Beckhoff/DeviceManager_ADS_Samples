@@ -5,8 +5,6 @@
 #include "BDM_ConfigurationArea.h"
 #include "Mdp.h"
 
-#include <fstream>
-
 namespace DeviceManager {
 
 	class CPU : public ConfigurationArea {

@@ -61,5 +61,4 @@ int32_t DeviceManager::CPU::getTemp(int16_t& temp)
 	u32_cpu_temp_idx = (u32_cpu_temp_idx << 16) + 3; // 3 = Subindex of CPU temeprature
 
 	return m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_cpu_temp_idx, sizeof(temp), &temp, &n_bytesRead);
-
 }
