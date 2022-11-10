@@ -38,7 +38,7 @@ int32_t FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 	assert(file_name != NULL);
 	assert(strlen(file_name) > 0);
 
-	char service_transfer_object[m_stringBuf] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
+	char service_transfer_object[m_cbStringBuf] = {}; // cbFilename (4 byte), bRecursive (4byte), filename
 	char* p_sdo = service_transfer_object;
 
 	uint32_t file_name_length = (uint32_t)strlen(file_name);

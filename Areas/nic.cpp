@@ -45,13 +45,13 @@ int32_t DeviceManager::NIC::getIPv4Address(std::string& IPv4)
 	int32_t error = 0;
 	uint32_t strLen = 0;
 
-	auto sBuf = std::shared_ptr<char[]>(new char[m_stringBuf]);
+	auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
 
 	uint32_t u32_NIC_properties = 0;
 	u32_NIC_properties = 0x8001 + (m_moduleId << 4);
 	u32_NIC_properties = (u32_NIC_properties << 16) + 2; // subindex for IP-Address
 
-	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, m_stringBuf, sBuf.get(), &strLen);
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_NIC_properties, m_cbStringBuf, sBuf.get(), &strLen);
 
 	if (error != ADSERR_NOERR) return error;
 
