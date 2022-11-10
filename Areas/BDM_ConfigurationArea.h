@@ -32,7 +32,7 @@ namespace DeviceManager {
 		static const uint32_t	m_large_buf		= 65536;
 		static const uint32_t	m_cbWriteMax	= 1024;
 		static const uint32_t	m_cbReadMax		= 1024;
-		static const uint32_t	m_stringBuf = 128;
+		static const uint32_t	m_stringBuf		= 128;
 		static const uint32_t   m_cbBufMin		= 6;
 		
 
