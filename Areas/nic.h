@@ -25,8 +25,6 @@ namespace DeviceManager {
 		static const uint16_t m_moduleType = MODULETYPE_NIC;
 		std::vector<uint16_t> m_moduleIds;
 		int16_t m_moduleId;
-
-		static const uint32_t m_stringBuf = 128;
 	};
 }
 #endif

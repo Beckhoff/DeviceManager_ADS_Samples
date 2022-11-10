@@ -21,6 +21,7 @@ namespace DeviceManager {
 		int32_t getTcMajor(uint16_t& major);
 		int32_t getTcMinor(uint16_t& minor);
 		int32_t getTcBuild(uint16_t& build);
+
 		static const uint16_t m_moduleType = MODULETYPE_TWINCAT;
 		int16_t m_moduleId;
 	};

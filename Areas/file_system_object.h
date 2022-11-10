@@ -99,12 +99,7 @@ namespace DeviceManager {
 		int32_t copyDeviceFile(const char source[], const char dest[], uint32_t flags);
 		int32_t mkdir(const char path[], bool bRecursive);
 
-		static const uint32_t	m_large_buf		= 65536;
-		static const uint32_t	m_cbWriteMax	= 1024;
-		static const uint32_t	m_cbReadMax		= 1024;
-		static const uint32_t	m_stringBuf		= 128;
 		static const uint16_t	m_moduleType = MODULETYPE_FSO;
-
 		int16_t m_moduleId;
 	};
 }
