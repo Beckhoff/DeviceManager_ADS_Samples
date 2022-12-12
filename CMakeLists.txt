@@ -17,8 +17,13 @@ add_subdirectory(Examples)
 
 if (WIN32)
     target_include_directories(DeviceManager PUBLIC "C:\\TwinCAT\\AdsApi\\TcAdsDll\\Include")
-    target_link_directories(DeviceManager PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
     target_link_libraries(DeviceManager PUBLIC TcAdsDll.lib)
+
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        target_link_directories(DeviceManager PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        target_link_directories(DeviceManager PRIVATE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\lib")
+    endif()
 
 elseif(UNIX) # Linux, FreeBSD or TwinCAT/BSD
 

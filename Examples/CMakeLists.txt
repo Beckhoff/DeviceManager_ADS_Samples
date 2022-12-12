@@ -9,7 +9,13 @@ set(CMAKE_CXX_EXTENSION OFF)
 if (WIN32)
     add_compile_definitions(USE_TWINCAT_ROUTER)
     link_libraries(TcAdsDll.lib)
-    link_directories(BEFORE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
+
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        link_directories(BEFORE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\x64\\lib")
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        link_directories(BEFORE "C:\\TwinCAT\\AdsApi\\TcAdsDll\\lib")
+    endif()
+
 elseif(UNIX)
 
     execute_process(
