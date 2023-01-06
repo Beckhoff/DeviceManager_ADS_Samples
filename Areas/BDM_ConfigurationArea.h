@@ -37,7 +37,7 @@ namespace DeviceManager {
 		
 
 		int32_t		getStoStateInfo(uint32_t index);
-		int32_t		getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::shared_ptr<char[]> &buf);
+        int32_t		getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::shared_ptr<char[]> &buf, bool expectData = false, uint32_t retries = 3, uint32_t delay = 10);
 		uint16_t	getFirstModuleId(uint16_t moduleType);
 
 		std::vector<uint16_t> getModuleIds(uint16_t moduleType);

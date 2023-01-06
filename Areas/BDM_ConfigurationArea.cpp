@@ -11,6 +11,8 @@
 
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <thread>
 
 using namespace DeviceManager;
 
@@ -84,7 +86,7 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index)
 	return getStoStateInfo(index, 4, buf);
 }
 
-int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::shared_ptr<char[]> &buf)
+int32_t ConfigurationArea::getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::shared_ptr<char[]> &buf, bool expectData, uint32_t retries, uint32_t delay)
 {
     uint32_t error = 0;
 	uint32_t n_bytes_read = 0;
@@ -103,16 +105,23 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index, uint32_t cbBuf, std::
 
 	switch (mdp_status) {
 
-	case 0:
+    case 0: // No error; No data available
+        buf.reset();
+        if(retries > 0){
+            retries--;
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+            getStoStateInfo(index, cbBuf, buf, expectData, retries, delay);
+        }
 		break;
-	case 1:
+    case 1: // No error; Data available
 		// Advance pointer to actual data area
 		buf = std::shared_ptr<char[]>(buf, (char*)(buf.get() + 2));
 		break;
-	case 2:
+    case 2: // error; No data available
+        buf.reset();
         error = 0xECA60001; // Unspecified error
 		break;
-	case 3:
+    case 3: // error; data available (4 byte MDP error code)
         error = *reinterpret_cast<uint32_t*>(buf.get() + 2);
 		break;
 	}
