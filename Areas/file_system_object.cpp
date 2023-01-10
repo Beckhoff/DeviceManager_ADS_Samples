@@ -95,7 +95,7 @@ int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>
     if (error != ADSERR_NOERR) return error;
 
     char* dir_sdo_data = buffer.get();
-
+	if (!buffer) return 0xECA60105; // No data available
     DeviceManager::TDir dirInfo = *reinterpret_cast<DeviceManager::PTDir>(dir_sdo_data);
 
     // Iterate over directories
