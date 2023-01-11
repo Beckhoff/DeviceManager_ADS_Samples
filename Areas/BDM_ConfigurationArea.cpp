@@ -107,7 +107,7 @@ int32_t ConfigurationArea::getStoStateInfo(uint32_t index,	uint32_t cbBuf, std::
 
     case 0: // No error; No data available
         buf.reset();
-        if(retries > 0){
+        if(expectData && retries > 0){
             retries--;
             std::this_thread::sleep_for(std::chrono::milliseconds(delay));
             getStoStateInfo(index, cbBuf, buf, expectData, retries, delay);
