@@ -32,6 +32,7 @@ The following examples are currently available in the [Examples](/Examples) fold
     - [Dir](/Examples/dir.cpp)
     - [Mkdir](/Examples/mkdir.cpp)
     - [ReadFile](/Examples/read_file.cpp)
+    - [ReadFileWithProgressBar](/Examples/read_file_progress_bar.cpp)
     - [WriteFile](/Examples/write_file.cpp)
     - [CopyFile](/Examples/copy_file.cpp)
   - [Mainboard](https://infosys.beckhoff.com/content/1031/devicemanager/263006475.html?id=3759807160000515243)

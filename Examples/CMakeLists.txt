@@ -49,6 +49,7 @@ add_executable(DeleteFile "delete_file.cpp")
 add_executable(Dir "dir.cpp")
 add_executable(Mkdir "mkdir.cpp")
 add_executable(ReadFile "read_file.cpp")
+add_executable(ReadFileWithProgressBar "read_file_progress_bar.cpp")
 add_executable(WriteFile "write_file.cpp")
 add_executable(CopyFile "copy_file.cpp")
 # Mainboard
