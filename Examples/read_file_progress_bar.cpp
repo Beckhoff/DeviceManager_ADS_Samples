@@ -52,9 +52,7 @@ int main() {
 		return -1;
 	}
 
-	//const char* targetFile = R"(C:\TwinCAT\3.1\Boot\Plc\Port_851_boot.tizip)";
-	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\Plc\Port_851.cid)";
-	
+	const char* targetFile = R"(C:\TwinCAT\3.1\Boot\Plc\Port_851_boot.tizip)";
 
 	std::cout << "> Read file " << targetFile << " from target" << std::endl;
 
