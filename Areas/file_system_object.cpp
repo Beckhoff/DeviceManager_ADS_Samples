@@ -231,8 +231,6 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 	if (bar) {
 		getFileSize(file_name, fileSize);
 		steps = fileSize / (m_cbReadMax - 12) / 100;
-
-		
 	}
 
 	bool bComplete = false;
@@ -257,7 +255,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 			// Update progress bar on full percents only
 			if (stepCnt >= steps || stepCnt == 0) {
 				stepCnt = 0;
-				bar((float)bytesRead / (float)fileSize);
+				bar( (bytesRead*100) / fileSize);
 			}
 			stepCnt++;
 		}

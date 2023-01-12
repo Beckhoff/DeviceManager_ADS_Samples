@@ -89,7 +89,7 @@ namespace DeviceManager {
 		// char[cbFilename]
 	} TMkdirIn, * PTMkdirIn;
 
-	typedef void (*fProgress)(float progress);
+	typedef void (*fProgress)(int progress);
 
 	class FileSystemObject : public ConfigurationArea {
 	public:
