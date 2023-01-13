@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace DeviceManager {
 
@@ -92,6 +93,7 @@ namespace DeviceManager {
 	typedef void (*fProgress)(int progress);
 
 	class FileSystemObject : public ConfigurationArea {
+
 	public:
 		FileSystemObject(BasicADS& adsClient);
 
@@ -102,9 +104,9 @@ namespace DeviceManager {
 		FileSystemObject& operator=(const FileSystemObject& other);
 
 		int32_t deleteFile(const char file_name[], bool bRecursive = false);
-		int32_t dir(const char folder_name[], std::vector<std::string> &folders, std::vector<std::string> &files);
+		int32_t dir(const char folder_name[], std::vector<std::string>& folders, std::vector<std::string>& files);
 		int32_t dir(const char folder_name[], std::vector<std::string>& folders, std::vector<TFileInfoEx>& files);
-		int32_t readDeviceFile(const char file_name[], std::ostream& local_file, fProgress bar =nullptr);
+		int32_t readDeviceFile(const char file_name[], std::ostream& local_file, std::function<void(int)> bar = std::function<void(int)>(), bool& cancel = m_bDefaultCancel);
 		int32_t writeDeviceFile(const char file_name[], std::istream& data);
 		int32_t copyDeviceFile(const char source[], const char dest[], uint32_t flags);
 		int32_t mkdir(const char path[], bool bRecursive);
@@ -112,6 +114,9 @@ namespace DeviceManager {
 
 		static const uint16_t	m_moduleType = MODULETYPE_FSO;
 		int16_t m_moduleId;
+	private:
+
+		static bool m_bDefaultCancel;
 	};
 }
 #endif

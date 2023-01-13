@@ -14,8 +14,10 @@
 
 using namespace DeviceManager;
 
+bool FileSystemObject::m_bDefaultCancel = false;
+
 FileSystemObject::FileSystemObject(BasicADS& adsClient)
-	:  ConfigurationArea(adsClient)
+	: ConfigurationArea(adsClient)
 	, m_moduleId(-1)
 {
 	// Search if module type is present on the target
@@ -68,64 +70,64 @@ int32_t FileSystemObject::deleteFile(const char file_name[], bool bRecursive)
 
 int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>& folders, std::vector<std::string>& files)
 {
-    assert(folder_name != NULL);
-    assert(strlen(folder_name) > 0);
+	assert(folder_name != NULL);
+	assert(strlen(folder_name) > 0);
 
-    uint32_t cbsRootDir = (uint32_t)strlen(folder_name);
+	uint32_t cbsRootDir = (uint32_t)strlen(folder_name);
 
-    // cbsRootDir (4 byte), sRootDir
-    std::shared_ptr<char[]> sdo_wBuf = std::shared_ptr<char[]>(new char[4 + (size_t)cbsRootDir]);
-    char* pWBuf = sdo_wBuf.get();
-    *reinterpret_cast<uint32_t*>(pWBuf) = cbsRootDir;
-    pWBuf += 4; // Advance pointer, cbsRootDir (4 byte)
-    // Copy folder name to service transfer object
-    memcpy(pWBuf, folder_name, cbsRootDir);
+	// cbsRootDir (4 byte), sRootDir
+	std::shared_ptr<char[]> sdo_wBuf = std::shared_ptr<char[]>(new char[4 + (size_t)cbsRootDir]);
+	char* pWBuf = sdo_wBuf.get();
+	*reinterpret_cast<uint32_t*>(pWBuf) = cbsRootDir;
+	pWBuf += 4; // Advance pointer, cbsRootDir (4 byte)
+	// Copy folder name to service transfer object
+	memcpy(pWBuf, folder_name, cbsRootDir);
 
-    uint32_t u32_dir_idx = 0xB000 + (m_moduleId << 4);
-    u32_dir_idx = (u32_dir_idx << 16);
+	uint32_t u32_dir_idx = 0xB000 + (m_moduleId << 4);
+	u32_dir_idx = (u32_dir_idx << 16);
 
-    int32_t error = 0;
-    error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, sizeof(cbsRootDir) + cbsRootDir, sdo_wBuf.get());
+	int32_t error = 0;
+	error = m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_dir_idx + 1 /* trigger */, sizeof(cbsRootDir) + cbsRootDir, sdo_wBuf.get());
 
-    if (error != ADSERR_NOERR) return error;
+	if (error != ADSERR_NOERR) return error;
 
-    // Read state and data of operation
-    std::shared_ptr<char[]> buffer;
-    error = getStoStateInfo(u32_dir_idx, m_large_buf, buffer, true);
+	// Read state and data of operation
+	std::shared_ptr<char[]> buffer;
+	error = getStoStateInfo(u32_dir_idx, m_large_buf, buffer, true);
 
-    if (error != ADSERR_NOERR) return error;
+	if (error != ADSERR_NOERR) return error;
 
 	if (!buffer) return 0xECA60105; // No data available
-    char* dir_sdo_data = buffer.get();
-	
-    DeviceManager::TDir dirInfo = *reinterpret_cast<DeviceManager::PTDir>(dir_sdo_data);
+	char* dir_sdo_data = buffer.get();
 
-    // Iterate over directories
-    char* dir_offset = dir_sdo_data + dirInfo.nOffsFirstDir;
+	DeviceManager::TDir dirInfo = *reinterpret_cast<DeviceManager::PTDir>(dir_sdo_data);
 
-    for (uint32_t i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
-        DeviceManager::TDirInfo dirInfo = *reinterpret_cast<DeviceManager::PTDirInfo>(dir_offset);
+	// Iterate over directories
+	char* dir_offset = dir_sdo_data + dirInfo.nOffsFirstDir;
 
-        char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
-        std::string sDirName(pDirName, dirInfo.cchName);
-        folders.push_back(sDirName);
+	for (uint32_t i_dir = 0; i_dir < dirInfo.cDirs; ++i_dir) {
+		DeviceManager::TDirInfo dirInfo = *reinterpret_cast<DeviceManager::PTDirInfo>(dir_offset);
 
-        dir_offset = dir_sdo_data + dirInfo.nOffsNextDir; // Move forward to next TDirInfo
-    }
+		char* pDirName = dir_offset + sizeof(dirInfo); // Move forward to char[]
+		std::string sDirName(pDirName, dirInfo.cchName);
+		folders.push_back(sDirName);
 
-    // Iterate over files
-    char* file_offset = dir_sdo_data + dirInfo.nOffsFirstFile;
+		dir_offset = dir_sdo_data + dirInfo.nOffsNextDir; // Move forward to next TDirInfo
+	}
 
-    for (uint32_t i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
-        DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
+	// Iterate over files
+	char* file_offset = dir_sdo_data + dirInfo.nOffsFirstFile;
 
-        char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
-        std::string sFileName(pFileName, fileInfo.cchFile);
-        files.push_back(sFileName);
+	for (uint32_t i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
+		DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
 
-        file_offset = dir_sdo_data + fileInfo.nOffsNextFile; // Move forward to next TFileInfo
-    }
-    return error;
+		char* pFileName = file_offset + sizeof(fileInfo); // Move forward to char[]
+		std::string sFileName(pFileName, fileInfo.cchFile);
+		files.push_back(sFileName);
+
+		file_offset = dir_sdo_data + fileInfo.nOffsNextFile; // Move forward to next TFileInfo
+	}
+	return error;
 }
 
 int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>& folders, std::vector<TFileInfoEx>& files)
@@ -181,8 +183,8 @@ int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>
 	for (uint32_t i_files = 0; i_files < dirInfo.cFiles; ++i_files) {
 		DeviceManager::TFileInfo fileInfo = *reinterpret_cast<DeviceManager::PTFileInfo>(file_offset);
 
-		
-		char* pFileName = file_offset + sizeof(fileInfo); 
+
+		char* pFileName = file_offset + sizeof(fileInfo);
 		std::string sFileName(pFileName, fileInfo.cchFile);
 		DeviceManager::TFileInfoEx fileInfoEx = { fileInfo.filesize, fileInfo.attribs, sFileName };
 		files.push_back(fileInfoEx);
@@ -192,7 +194,7 @@ int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>
 	return error;
 }
 
-int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file, fProgress bar)
+int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file, std::function<void(int)> bar, bool& cancel)
 {
 	assert(file_name != NULL);
 	assert(strlen(file_name) > 0);
@@ -207,7 +209,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 		0, // Continuation handle
 		m_cbReadMax
 	};
-	
+
 	// Copy read info SDO
 	*reinterpret_cast<DeviceManager::PTReadFileIn>(pWBuf) = write_info;
 	// Copy file name to service transfer object
@@ -235,7 +237,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 
 	bool bComplete = false;
 
-	while (!bComplete) {
+	while (!bComplete && !cancel) {
 
 		std::shared_ptr<char[]> sdo_rBuf;
 		error = getStoStateInfo(u32_rd_idx, m_cbReadMax, sdo_rBuf, true);
@@ -244,7 +246,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 
 		if (!sdo_rBuf) return 0xECA60105; // No data available
 		char* rd_sdo_data = sdo_rBuf.get();
-		
+
 		DeviceManager::TReadFileOut read_info = *reinterpret_cast<DeviceManager::PTReadFileOut>(rd_sdo_data);
 		rd_sdo_data += sizeof(read_info);
 		local_file.write(rd_sdo_data, (std::streamsize)read_info.cbData);
@@ -255,7 +257,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 			// Update progress bar on full percents only
 			if (stepCnt >= steps || stepCnt == 0) {
 				stepCnt = 0;
-				bar( (bytesRead*100) / fileSize);
+				bar((bytesRead * 100) / fileSize);
 			}
 			stepCnt++;
 		}
@@ -360,7 +362,7 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 		// Read state of operation
 		error = getStoStateInfo(u32_wrt_idx);
-		
+
 		if (error != ADSERR_NOERR) return error;
 	}
 	return error;
@@ -368,11 +370,11 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 int32_t FileSystemObject::copyDeviceFile(const char source[], const char dest[], uint32_t flags)
 {
-	assert(source != NULL && dest !=NULL);
+	assert(source != NULL && dest != NULL);
 	assert((strlen(source) > 0) && (strlen(dest) > 0));
 
-	uint32_t cb_source	= (uint32_t)strlen(source);
-	uint32_t cb_dest	= (uint32_t)strlen(dest);
+	uint32_t cb_source = (uint32_t)strlen(source);
+	uint32_t cb_dest = (uint32_t)strlen(dest);
 
 	DeviceManager::TCopyFileIn copyInfo = {
 		cb_source, //cbSrc
@@ -390,7 +392,7 @@ int32_t FileSystemObject::copyDeviceFile(const char source[], const char dest[],
 	memcpy(pWBuf, source, cb_source);
 	pWBuf += cb_source;
 	memcpy(pWBuf, dest, cb_dest);
-	
+
 	uint32_t u32_cpy_idx = 0xB003 + (m_moduleId << 4);
 	u32_cpy_idx = (u32_cpy_idx << 16);
 
@@ -449,7 +451,7 @@ int32_t  FileSystemObject::getFileSize(const char file_path[], size_t& fileSize)
 	fPath += delimiter;
 	fPath += '*';
 
-	
+
 	std::vector<std::string> folders;
 	std::vector<TFileInfoEx> files;
 
