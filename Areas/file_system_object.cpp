@@ -466,7 +466,7 @@ int32_t  FileSystemObject::getFileSize(const char file_path[], size_t& fileSize)
 		fileSize = fit->filesize;
 	}
 	else {
-		error = 0xECA700002;
+		error = 0xECA70002;
 	}
 
 	return error;
