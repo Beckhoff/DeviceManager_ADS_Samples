@@ -257,7 +257,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 			// Update progress bar on full percents only
 			if (stepCnt >= steps || stepCnt == 0) {
 				stepCnt = 0;
-				bar((bytesRead * 100) / fileSize);
+				bar(static_cast<int>((bytesRead * 100) / fileSize));
 			}
 			stepCnt++;
 		}
