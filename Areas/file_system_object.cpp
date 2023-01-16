@@ -15,6 +15,7 @@
 using namespace DeviceManager;
 
 bool FileSystemObject::m_bDefaultCancel = false;
+size_t FileSystemObject::m_bytesCount = 0;
 
 FileSystemObject::FileSystemObject(BasicADS& adsClient)
 	: ConfigurationArea(adsClient)
@@ -280,7 +281,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 	return error;
 }
 
-int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data)
+int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data, size_t& n_bytes_count)
 {
 	assert(file_name != nullptr);
 	assert(strlen(file_name) > 0);
@@ -365,6 +366,7 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 		if (error != ADSERR_NOERR) return error;
 	}
+	n_bytes_count = data.tellg();
 	return error;
 }
 
