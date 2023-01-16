@@ -51,6 +51,7 @@ add_executable(Mkdir "mkdir.cpp")
 add_executable(ReadFile "read_file.cpp")
 add_executable(ReadFileWithProgressBar "read_file_progress_bar.cpp")
 add_executable(WriteFile "write_file.cpp")
+add_executable(WriteFileWithProgressBar "write_file_progress_bar.cpp")
 add_executable(CopyFile "copy_file.cpp")
 # Mainboard
 add_executable(GetMainboardInfo "get_mainboard_info.cpp")

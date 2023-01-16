@@ -34,6 +34,7 @@ The following examples are currently available in the [Examples](/Examples) fold
     - [ReadFile](/Examples/read_file.cpp)
     - [ReadFileWithProgressBar](/Examples/read_file_progress_bar.cpp)
     - [WriteFile](/Examples/write_file.cpp)
+    - [WriteFileWithProgressBar](/Examples/write_file_progress_bar.cpp)
     - [CopyFile](/Examples/copy_file.cpp)
   - [Mainboard](https://infosys.beckhoff.com/content/1031/devicemanager/263006475.html?id=3759807160000515243)
     - [GetMainboardInfo](/Examples/get_mainboard_info.cpp)

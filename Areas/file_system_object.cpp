@@ -281,7 +281,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 	return error;
 }
 
-int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data, size_t& n_bytes_count)
+int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& data, size_t& n_bytes_count, std::function<void(int)> bar, bool& cancel)
 {
 	assert(file_name != nullptr);
 	assert(strlen(file_name) > 0);
@@ -333,7 +333,14 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 	// Calculates the remaining bytes to write
 	auto f_remaining = [&]() -> uint32_t { return data_length - (uint32_t)data.tellg(); };
 
-	while (f_remaining() > 0) {
+	// Read file size if a progress bar has to be displayes
+	uint32_t steps = 0;
+	uint32_t stepCnt = 0;
+	if (bar) {
+		steps = data_length / m_cbWriteMax / 100;
+	}
+
+	while (f_remaining() > 0 && !cancel) {
 
 		uint32_t cbDataWrite = (f_remaining() >= m_cbWriteMax) ? m_cbWriteMax : f_remaining();
 
@@ -365,6 +372,18 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 		error = getStoStateInfo(u32_wrt_idx);
 
 		if (error != ADSERR_NOERR) return error;
+
+		// Drive progress bar
+		if (bar) {
+			// Update progress bar on full percents only
+			if (stepCnt >= steps || stepCnt == 0) {
+				stepCnt = 0;
+				int progress = static_cast<int>(100 * (1 - static_cast<float>(f_remaining()) / static_cast<float>(data_length)));
+				bar(progress);
+			}
+			stepCnt++;
+		}
+
 	}
 	n_bytes_count = data.tellg();
 	return error;

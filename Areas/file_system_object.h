@@ -107,7 +107,11 @@ namespace DeviceManager {
 		int32_t dir(const char folder_name[], std::vector<std::string>& folders, std::vector<std::string>& files);
 		int32_t dir(const char folder_name[], std::vector<std::string>& folders, std::vector<TFileInfoEx>& files);
 		int32_t readDeviceFile(const char file_name[], std::ostream& local_file, std::function<void(int)> bar = std::function<void(int)>(), bool& cancel = m_bDefaultCancel);
-		int32_t writeDeviceFile(const char file_name[], std::istream& data, size_t &n_bytes_count = m_bytesCount);
+		int32_t writeDeviceFile(const char file_name[],
+								std::istream& data,
+								size_t &n_bytes_count = m_bytesCount,
+								std::function<void(int)> bar = std::function<void(int)>(),
+								bool& cancel = m_bDefaultCancel);
 		int32_t copyDeviceFile(const char source[], const char dest[], uint32_t flags);
 		int32_t mkdir(const char path[], bool bRecursive);
 		int32_t getFileSize(const char file_path[], size_t& fileSize);
