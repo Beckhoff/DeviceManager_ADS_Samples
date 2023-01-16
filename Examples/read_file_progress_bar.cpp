@@ -57,8 +57,9 @@ int main() {
 	std::cout << "> Read file " << targetFile << " from target" << std::endl;
 
 	const char* localFile = R"(Port_851_boot.tizip)";
-	std::ofstream current_config(localFile, std::ios::binary);
 
-	int32_t error = fso->readDeviceFile(targetFile, current_config, progressBar);
+	size_t bytesRead = 0;
+	std::ofstream current_config(localFile, std::ios::binary);
+	int32_t error = fso->readDeviceFile(targetFile, current_config, bytesRead, progressBar);
 	handleError(error);
 }

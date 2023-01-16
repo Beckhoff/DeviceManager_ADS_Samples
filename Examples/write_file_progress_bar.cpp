@@ -52,8 +52,8 @@ int main() {
 		return -1;
 	}
 
-	const char* sourceFile = R"(C:\TwinCAT\3.1\sdk\Lib\TwinCAT RT (x64)\TcFramework.lib)";
-	const char* targetFile = R"(C:\TwinCAT\3.1\sdk\Lib\TwinCAT RT (x64)\TcFramework_from_XAE.lib.)";
+	const char* sourceFile = R"(C:\TwinCAT\AdsApi\TcAdsDll\TcAdsDll.dll)";
+	const char* targetFile = R"(C:\TwinCAT\AdsApi\TcAdsDll\TcAdsDll.dll_from_XAE)";
 
 	std::cout << "> Write " << sourceFile << " to " << targetFile << " on target" << std::endl;
 

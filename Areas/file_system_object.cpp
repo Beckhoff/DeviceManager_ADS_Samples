@@ -195,11 +195,12 @@ int32_t FileSystemObject::dir(const char folder_name[], std::vector<std::string>
 	return error;
 }
 
-int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file, std::function<void(int)> bar, bool& cancel)
+int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& local_file, size_t& n_bytes_count, std::function<void(int)> bar, bool& cancel)
 {
 	assert(file_name != NULL);
 	assert(strlen(file_name) > 0);
 
+	n_bytes_count = 0;
 	// STO: cbFilename (4 byte), Continuation handle (4byte), cbMaxRead (4byte), Filename (char[])
 	uint32_t cbFilename = (uint32_t)strlen(file_name);
 	auto sdo_wBuf = std::shared_ptr<char[]>(new char[12 + (size_t)cbFilename]);
@@ -251,6 +252,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 		DeviceManager::TReadFileOut read_info = *reinterpret_cast<DeviceManager::PTReadFileOut>(rd_sdo_data);
 		rd_sdo_data += sizeof(read_info);
 		local_file.write(rd_sdo_data, (std::streamsize)read_info.cbData);
+		n_bytes_count += read_info.cbData;
 
 		if (bar) {
 			bytesRead += read_info.cbData;
@@ -286,6 +288,7 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 	assert(file_name != nullptr);
 	assert(strlen(file_name) > 0);
 
+	n_bytes_count = 0;
 	// Calcualte size of data:
 	data.seekg(0, data.end);
 	uint32_t data_length = (uint32_t)data.tellg();
