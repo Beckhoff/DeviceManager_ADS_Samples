@@ -335,6 +335,8 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 	// Calculates the remaining bytes to write
 	auto f_remaining = [&]() -> uint32_t { return data_length - (uint32_t)data.tellg(); };
+	uint32_t n_remaining = data_length;
+
 
 	// Read file size if a progress bar has to be displayes
 	uint32_t steps = 0;
@@ -343,15 +345,20 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 		steps = data_length / m_cbWriteMax / 100;
 	}
 
-	while (f_remaining() > 0 && !cancel) {
+	uint32_t bWriteComplete;
+	do {
+		uint32_t cbDataWrite = (n_remaining >= m_cbWriteMax) ? m_cbWriteMax : n_remaining;
 
-		uint32_t cbDataWrite = (f_remaining() >= m_cbWriteMax) ? m_cbWriteMax : f_remaining();
+		// Indicate last write command if
+		// - all remaining data goes into next command
+		// - cancelation token was actiavted
+		bWriteComplete = (uint32_t)((n_remaining < m_cbWriteMax) ? 1 : 0) | (uint32_t)cancel;
 
 		DeviceManager::TWriteFileIn write_info = {
 			0, // cbFilename
 			wrt_hdl, // Continuation handle
 			cbDataWrite, // cbData
-			(uint32_t)((cbDataWrite < m_cbWriteMax) ? 1 : 0) // Set to 1 to indicate the last write access
+			bWriteComplete // Set to 1 to indicate the last write access
 		};
 
 		// Create buffer for the SDO object to write
@@ -373,21 +380,23 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 		// Read state of operation
 		error = getStoStateInfo(u32_wrt_idx);
-
 		if (error != ADSERR_NOERR) return error;
+
+		// Calculate remaining bytes
+		n_remaining = f_remaining();
 
 		// Drive progress bar
 		if (bar) {
 			// Update progress bar on full percents only
 			if (stepCnt >= steps || stepCnt == 0) {
 				stepCnt = 0;
-				int progress = static_cast<int>(100 * (1 - static_cast<float>(f_remaining()) / static_cast<float>(data_length)));
+				int progress = static_cast<int>(100 * (1 - static_cast<float>(n_remaining) / static_cast<float>(data_length)));
 				bar(progress);
 			}
 			stepCnt++;
 		}
+	} while (!bWriteComplete);
 
-	}
 	n_bytes_count = data.tellg();
 	return error;
 }
