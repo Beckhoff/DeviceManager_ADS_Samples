@@ -351,7 +351,7 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 
 		// Indicate last write command if
 		// - all remaining data goes into next command
-		// - cancelation token was actiavted
+		// - cancelation token was activated
 		bWriteComplete = (uint32_t)((n_remaining < m_cbWriteMax) ? 1 : 0) | (uint32_t)cancel;
 
 		DeviceManager::TWriteFileIn write_info = {
