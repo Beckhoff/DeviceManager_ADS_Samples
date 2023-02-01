@@ -11,11 +11,11 @@
 
 class GenericAdsClient : public BasicADS {
 public:
-    GenericAdsClient(const AmsNetId& remoteNetId, const char* remoteIpV4)
+    GenericAdsClient(const AmsNetId& remoteNetId, const char* remoteIpV4, uint32_t timeout = 1000)
         : m_adsClient(nullptr){
 
         m_adsClient = new AdsDevice(remoteIpV4, remoteNetId, 10000);
-
+        m_adsClient->SetTimeout(timeout);
     };
 
     ~GenericAdsClient(){
