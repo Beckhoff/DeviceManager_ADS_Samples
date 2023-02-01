@@ -16,13 +16,13 @@
 
 class TC1000AdsClient : public BasicADS {
 public:
-    TC1000AdsClient(const AmsNetId& remoteNetId)
+    TC1000AdsClient(const AmsNetId& remoteNetId, uint32_t timeout = 1000)
         : m_AmsAddr()
         , m_port(0) {
 
         m_AmsAddr.netId = remoteNetId;
         m_AmsAddr.port = 10000;
-
+        AdsSyncSetTimeout(timeout); // ms
         m_port = AdsPortOpen();
 
     };
