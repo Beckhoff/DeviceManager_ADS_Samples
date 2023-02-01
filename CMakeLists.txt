@@ -41,20 +41,22 @@ elseif(UNIX) # Linux, FreeBSD or TwinCAT/BSD
     else()
         # Use the generic ADS Router from GitHub
 
+
     # TODO: This dependency is in the wrong CMakeLists.txt in the Beckhoff/ADS repo
     find_package(Threads)
 
+    
     include(FetchContent)
 
     FetchContent_Declare(
 	    Beckhoff_ADS
 	    GIT_REPOSITORY https://github.com/Beckhoff/ADS.git
-	    GIT_TAG        a2fcc332684a92786a1164f5891d719d299cb2f8 # v14 
+	    GIT_TAG        a40f0181fd4aec46ea7bb273258a0cadab067cbf # v18
 	    SOURCE_SUBDIR  AdsLib
     )
-
+    
     FetchContent_MakeAvailable(Beckhoff_ADS)
-
+    target_compile_definitions(ads PUBLIC CONFIG_DEFAULT_LOGLEVEL=3)
     
     target_include_directories(DeviceManager PUBLIC "/usr/local/include")
     target_link_directories(DeviceManager PRIVATE "/usr/local/lib")
