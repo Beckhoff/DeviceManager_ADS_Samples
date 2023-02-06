@@ -234,6 +234,7 @@ int32_t FileSystemObject::readDeviceFile(const char file_name[], std::ostream& l
 
 	if (bar) {
 		getFileSize(file_name, fileSize);
+		bar = (fileSize != 0) ? bar : nullptr;
 		steps = fileSize / (m_cbReadMax - 12) / 100;
 	}
 
@@ -341,6 +342,8 @@ int32_t FileSystemObject::writeDeviceFile(const char file_name[], std::istream& 
 	// Read file size if a progress bar has to be displayes
 	uint32_t steps = 0;
 	uint32_t stepCnt = 0;
+
+	bar = (data_length != 0) ? bar : nullptr;
 	if (bar) {
 		steps = data_length / m_cbWriteMax / 100;
 	}
@@ -483,7 +486,6 @@ int32_t  FileSystemObject::getFileSize(const char file_path[], size_t& fileSize)
 
 	fPath += delimiter;
 	fPath += '*';
-
 
 	std::vector<std::string> folders;
 	std::vector<TFileInfoEx> files;
