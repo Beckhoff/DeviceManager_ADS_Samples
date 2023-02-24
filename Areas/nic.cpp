@@ -63,7 +63,6 @@ int32_t DeviceManager::NIC::getIPv4Address(std::string& IPv4)
 int32_t DeviceManager::NIC::setIPv4Address(const char IPv4[])
 {
 	int32_t error = 0;
-	uint32_t strLen = 0;
 
 	uint32_t u32_NIC_properties = 0;
 	u32_NIC_properties = 0x8001 + (m_moduleId << 4);
