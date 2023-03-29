@@ -73,5 +73,5 @@ int32_t DeviceManager::NIC::setIPv4Address(const char IPv4[])
 
 uint32_t DeviceManager::NIC::count()
 {
-	return m_moduleIds.size();
+	return static_cast<uint32_t>(m_moduleIds.size());
 }
