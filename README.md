@@ -38,6 +38,8 @@ The following examples are currently available in the [Examples](/Examples) fold
     - [CopyFile](/Examples/copy_file.cpp)
   - [Mainboard](https://infosys.beckhoff.com/content/1031/devicemanager/263006475.html?id=3759807160000515243)
     - [GetMainboardInfo](/Examples/get_mainboard_info.cpp)
+  - [Disk Management](https://infosys.beckhoff.com/content/1033/devicemanager/262990091.html)
+    - [DiskInfo](/Examples/disk_info.cpp)
   - [Miscellaneous](https://infosys.beckhoff.com/content/1031/devicemanager/263010571.html?id=6080561606085130)
     - [Reboot](/Examples/reboot.cpp)
 

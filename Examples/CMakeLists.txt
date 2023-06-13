@@ -55,6 +55,8 @@ add_executable(WriteFileWithProgressBar "write_file_progress_bar.cpp")
 add_executable(CopyFile "copy_file.cpp")
 # Mainboard
 add_executable(GetMainboardInfo "get_mainboard_info.cpp")
+# Disk Management
+add_executable(DiskInfo "disk_info.cpp")
 # Miscellaneous
 add_executable(Reboot "reboot.cpp")
 

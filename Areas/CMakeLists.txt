@@ -9,4 +9,5 @@ target_sources(DeviceManager
         twincat.cpp
         miscellaneous.cpp
         mainboard.cpp
+        disk_mgmt.cpp
 )
