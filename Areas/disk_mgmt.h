@@ -21,6 +21,7 @@ namespace DeviceManager {
 		uint32_t count();
 		
 		int32_t getVolumeLabels(std::vector<std::string>& volLabels);
+		int32_t getDriveLetters(std::vector<std::string>& driveLetters);
 
 		static const uint16_t m_moduleType = MODULETYPE_DISKMGMT;
 		std::vector<uint16_t> m_moduleIds;

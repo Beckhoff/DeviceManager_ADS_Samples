@@ -41,12 +41,16 @@ int main() {
 
 	int32_t error = 0;
 
+	std::vector<std::string> driveLetters;
+	error = disk_mgmt->getDriveLetters(driveLetters);
+	handleError(error);
+
 	std::vector<std::string> volumeLabels;
 	error = disk_mgmt->getVolumeLabels(volumeLabels);
 	handleError(error);
 
 	for (int i = 0; i < volumeLabels.size(); i++)
 	{
-		std::cout << "Volume [" << i << "] - " << volumeLabels[i] << std::endl;
+		std::cout << "Volume [" << i << "] - " << driveLetters[i] << " - " << volumeLabels[i] << std::endl;
 	}
 }

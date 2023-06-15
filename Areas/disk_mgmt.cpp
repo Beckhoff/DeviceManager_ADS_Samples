@@ -54,7 +54,7 @@ int32_t DiskMgmt::getVolumeLabels(std::vector<std::string>& volLabels)
 	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_len, sizeof(n_volLables), &n_volLables, &n_bytesRead);
 	if (error != ADSERR_NOERR) return error;
 
-	if (n_bytesRead == 0 && u32_idx_vol_lbl_len == 0) return ADSERR_NOERR;
+	if (n_bytesRead == 0 && n_volLables == 0) return ADSERR_NOERR;
 
 	for(int sub_idx = 1; sub_idx <= n_volLables; sub_idx++)
 	{
@@ -62,15 +62,44 @@ int32_t DiskMgmt::getVolumeLabels(std::vector<std::string>& volLabels)
 		u32_idx_vol_lbl_string = 0x8000 + (m_moduleId << 4) + 2; // +2 for Volume Label table
 		u32_idx_vol_lbl_string = (u32_idx_vol_lbl_string << 16) + sub_idx; // +1 for each volume label (1..Len)
 
-		//auto sBuf = std::shared_ptr<char[]>(new char[volLabelLen]);
 		auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
 		
-		//error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_string, volLabelLen, sBuf.get(), &n_bytesRead);
 		error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_string, m_cbStringBuf, sBuf.get(), &n_bytesRead);
 		if (error != ADSERR_NOERR) return error;
 
 		sBuf[n_bytesRead] = 0; // End String
 		volLabels.push_back(std::string(sBuf.get()));	
+	}
+	return error;
+}
+
+int32_t DiskMgmt::getDriveLetters(std::vector<std::string>& driveLetters)
+{
+	int32_t error = 0;
+	uint16_t n_driveLetters = 0;
+	uint32_t n_bytesRead = 0;
+	uint32_t u32_idx_drive_letter_len = 0;
+	u32_idx_drive_letter_len = 0x8000 + (m_moduleId << 4) + 1; // +1 for Drive Letter table
+	u32_idx_drive_letter_len = u32_idx_drive_letter_len << 16;
+
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_drive_letter_len, sizeof(n_driveLetters), &n_driveLetters, &n_bytesRead);
+	if (error != ADSERR_NOERR) return error;
+
+	if (n_bytesRead == 0 && n_driveLetters == 0) return ADSERR_NOERR;
+
+	for (int sub_idx = 1; sub_idx <= n_driveLetters; sub_idx++)
+	{
+		uint32_t u32_idx_drive_letter_string = 0;
+		u32_idx_drive_letter_string = 0x8000 + (m_moduleId << 4) + 1; // +1 for Drive Letter table
+		u32_idx_drive_letter_string = (u32_idx_drive_letter_string << 16) + sub_idx; // +1 for each drive letter (1..Len)
+
+		auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
+
+		error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_drive_letter_string, m_cbStringBuf, sBuf.get(), &n_bytesRead);
+		if (error != ADSERR_NOERR) return error;
+
+		sBuf[n_bytesRead] = 0; // End String
+		driveLetters.push_back(std::string(sBuf.get()));
 	}
 	return error;
 }
