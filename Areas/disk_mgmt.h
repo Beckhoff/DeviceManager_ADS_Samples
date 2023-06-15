@@ -19,6 +19,8 @@ namespace DeviceManager {
 		DiskMgmt& operator[](int idx);
 
 		uint32_t count();
+		
+		int32_t getVolumeLabels(std::vector<std::string>& volLabels);
 
 		static const uint16_t m_moduleType = MODULETYPE_DISKMGMT;
 		std::vector<uint16_t> m_moduleIds;

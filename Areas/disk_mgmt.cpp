@@ -31,13 +31,46 @@ DiskMgmt& DiskMgmt::operator=(const DiskMgmt& other) {
 	return *this;
 }
 
-DiskMgmt& DeviceManager::DiskMgmt::operator[](int idx)
+DiskMgmt& DiskMgmt::operator[](int idx)
 {
 	m_moduleId = m_moduleIds[idx];
 	return *this;
 }
 
-uint32_t DeviceManager::DiskMgmt::count()
+uint32_t DiskMgmt::count()
 {
 	return static_cast<uint32_t>(m_moduleIds.size());
+}
+
+int32_t DiskMgmt::getVolumeLabels(std::vector<std::string>& volLabels)
+{
+	int32_t error = 0;
+	uint16_t n_volLables = 0;
+	uint32_t n_bytesRead = 0;
+	uint32_t u32_idx_vol_lbl_len = 0;
+	u32_idx_vol_lbl_len = 0x8000 + (m_moduleId << 4) + 2; // +2 for Volume Label table
+	u32_idx_vol_lbl_len = u32_idx_vol_lbl_len << 16;
+
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_len, sizeof(n_volLables), &n_volLables, &n_bytesRead);
+	if (error != ADSERR_NOERR) return error;
+
+	if (n_bytesRead == 0 && u32_idx_vol_lbl_len == 0) return ADSERR_NOERR;
+
+	for(int sub_idx = 1; sub_idx <= n_volLables; sub_idx++)
+	{
+		uint32_t u32_idx_vol_lbl_string = 0;
+		u32_idx_vol_lbl_string = 0x8000 + (m_moduleId << 4) + 2; // +2 for Volume Label table
+		u32_idx_vol_lbl_string = (u32_idx_vol_lbl_string << 16) + sub_idx; // +1 for each volume label (1..Len)
+
+		//auto sBuf = std::shared_ptr<char[]>(new char[volLabelLen]);
+		auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
+		
+		//error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_string, volLabelLen, sBuf.get(), &n_bytesRead);
+		error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_idx_vol_lbl_string, m_cbStringBuf, sBuf.get(), &n_bytesRead);
+		if (error != ADSERR_NOERR) return error;
+
+		sBuf[n_bytesRead] = 0; // End String
+		volLabels.push_back(std::string(sBuf.get()));	
+	}
+	return error;
 }

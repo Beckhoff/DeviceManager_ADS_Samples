@@ -9,10 +9,12 @@
 #include "ads_exception.h"
 #include <iostream>
 #include <optional>
+#include <vector>
 
 int main() {
 
-	static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
+	//static const AmsNetId remoteNetId{ 5, 80, 201, 232, 1, 1 };
+	static const AmsNetId remoteNetId{ 192, 168, 1, 122, 1, 1 };
 	//static const AmsNetId remoteNetId{ 5, 69, 55, 236, 1, 1 };
 
 #if defined(USE_TWINCAT_ROUTER)
@@ -37,6 +39,14 @@ int main() {
 		return -1;
 	}
 
-	uint32_t nDisks = disk_mgmt->count();
-	std::cout << nDisks << " Disks available on target" << std::endl;
+	int32_t error = 0;
+
+	std::vector<std::string> volumeLabels;
+	error = disk_mgmt->getVolumeLabels(volumeLabels);
+	handleError(error);
+
+	for (int i = 0; i < volumeLabels.size(); i++)
+	{
+		std::cout << "Volume [" << i << "] - " << volumeLabels[i] << std::endl;
+	}
 }
