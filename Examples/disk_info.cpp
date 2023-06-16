@@ -8,6 +8,7 @@
 #include "ads_error.h"
 #include "ads_exception.h"
 #include <iostream>
+#include <iomanip>
 #include <optional>
 #include <vector>
 
@@ -49,8 +50,18 @@ int main() {
 	error = disk_mgmt->getVolumeLabels(volumeLabels);
 	handleError(error);
 
+	std::vector<std::string> fileSystems;
+	error = disk_mgmt->getFileSystems(fileSystems);
+	handleError(error);
+
 	for (int i = 0; i < volumeLabels.size(); i++)
 	{
-		std::cout << "Volume [" << i << "] - " << driveLetters[i] << " - " << volumeLabels[i] << std::endl;
+		std::cout << "Volume [" << i << "] - "  <<
+			driveLetters[i] << 
+			" - " << std::right << std::setw(18) <<
+			volumeLabels[i] << 
+			" - " <<
+			fileSystems[i] <<
+			std::endl;
 	}
 }
