@@ -23,6 +23,7 @@ The following examples are currently available in the [Examples](/Examples) fold
   - [NIC](https://infosys.beckhoff.com/content/1031/devicemanager/263013131.html?id=5976289690375372601)
     - [ChangeIP](/Examples/change_ip.cpp)
   - [TwinCAT](https://infosys.beckhoff.com/content/1031/devicemanager/263030539.html?id=1967927695808387382)
+    - [ChangeAmsNetId](/Examples/change_amsnetid.cpp)
     - [DeleteAdsRoute](/Examples/delete_route.cpp)
     - [GetTcVersion](/Examples/get_tc_version.cpp)
   - [CPU](https://infosys.beckhoff.com/content/1031/devicemanager/262984459.html?id=5232713418016897865)
