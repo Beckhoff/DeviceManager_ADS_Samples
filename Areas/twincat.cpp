@@ -53,6 +53,33 @@ int32_t TwinCAT::deleteAdsRoute(const char route_name[]) {
 	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_del_ads_route_idx, sizeof(uint32_t) + route_name_length, service_transfer_object);
 }
 
+int32_t TwinCAT::getAmsNetId(std::string& amsNetId) {
+	int32_t error = 0;
+	uint32_t strLen = 0;
+
+	auto sBuf = std::shared_ptr<char[]>(new char[m_cbStringBuf]);
+
+	uint32_t u32_amsNetId_idx = 0x8001 + (m_moduleId << 4);
+	u32_amsNetId_idx = (u32_amsNetId_idx << 16) + 4; // Subindex "Ams Net ID"
+
+	error = m_adsClient.AdsReadReq(MDP_IDX_GRP, u32_amsNetId_idx, m_cbStringBuf, sBuf.get(), &strLen);
+
+	if (error != ADSERR_NOERR) return error;
+
+	sBuf[strLen] = 0; // End String
+	amsNetId = sBuf.get();
+	return error;
+}
+
+int32_t TwinCAT::setAmsNetId(const char amsNetId[]) {
+	assert(amsNetId != NULL);
+	assert(strlen(amsNetId) > 0);
+
+	uint32_t u32_amsNetId_idx = 0x8001 + (m_moduleId << 4);
+	u32_amsNetId_idx = (u32_amsNetId_idx << 16) + 4; // Subindex "Ams Net ID"
+	return m_adsClient.AdsWriteReq(MDP_IDX_GRP, u32_amsNetId_idx, (uint32_t)strlen(amsNetId), const_cast<char*>(amsNetId));
+}
+
 int32_t TwinCAT::getTcMajor(uint16_t& major) {
 	uint32_t u32_tc_major_idx = 0x8001 + (m_moduleId << 4);
 	u32_tc_major_idx = (u32_tc_major_idx << 16) + 1; // Subindex "Major version"

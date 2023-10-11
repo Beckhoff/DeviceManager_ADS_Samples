@@ -18,6 +18,8 @@ namespace DeviceManager {
 		TwinCAT& operator=(const TwinCAT& other);
 
 		int32_t deleteAdsRoute(const char route_name[]);
+		int32_t getAmsNetId(std::string& amsNetId);
+		int32_t setAmsNetId(const char amsNetId[]);
 		int32_t getTcMajor(uint16_t& major);
 		int32_t getTcMinor(uint16_t& minor);
 		int32_t getTcBuild(uint16_t& build);

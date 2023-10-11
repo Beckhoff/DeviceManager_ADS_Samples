@@ -40,6 +40,7 @@ link_libraries(DeviceManager)
 #NIC
 add_executable(ChangeIP "change_ip.cpp")
 # TwinCAT
+add_executable(ChangeAmsNetId "change_amsnetid.cpp")
 add_executable(DeleteAdsRoute "delete_route.cpp")
 add_executable(GetTcVersion "get_tc_version.cpp")
 # CPU
@@ -57,16 +58,14 @@ add_executable(CopyFile "copy_file.cpp")
 add_executable(GetMainboardInfo "get_mainboard_info.cpp")
 # Disk Management
 add_executable(DiskInfo "disk_info.cpp")
+# Mass Storage Monitoring
+add_executable(GetMassStorageInfo "get_mass_storage_info.cpp")
 # Miscellaneous
 add_executable(Reboot "reboot.cpp")
-
 # General Area
 add_executable(GetDeviceName "get_device_name.cpp")
-
 # Device Area
 add_executable(GetSerialNumber "get_serial_number.cpp")
-
-
 
 
 set_target_properties(ChangeIP                  PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)
