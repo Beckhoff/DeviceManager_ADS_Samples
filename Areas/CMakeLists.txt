@@ -10,4 +10,5 @@ target_sources(DeviceManager
         miscellaneous.cpp
         mainboard.cpp
         disk_mgmt.cpp
+        mass_storage_monitoring.cpp
 )

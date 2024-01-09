@@ -41,6 +41,8 @@ The following examples are currently available in the [Examples](/Examples) fold
     - [GetMainboardInfo](/Examples/get_mainboard_info.cpp)
   - [Disk Management](https://infosys.beckhoff.com/content/1033/devicemanager/262990091.html)
     - [DiskInfo](/Examples/disk_info.cpp)
+  - [Mass Storage Monitoring](https://infosys.beckhoff.com/content/1031/devicemanager/2139306763.html)
+    - [GetMassStorageInfo](/Examples/get_mass_storage_info.cpp) 
   - [Miscellaneous](https://infosys.beckhoff.com/content/1031/devicemanager/263010571.html?id=6080561606085130)
     - [Reboot](/Examples/reboot.cpp)
 
